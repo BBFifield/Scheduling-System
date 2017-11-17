@@ -1,16 +1,20 @@
 package main;
 
 import java.util.ArrayList;
+
 import schedule.Room;
 import users.User;
+import schedule.Booking;
+import graphicsComponents.Gui;
 
-public class System {
+public class SpaceSystem {
 	
 	private ArrayList<Room> rooms = new ArrayList<Room>();
 	private ArrayList<Booking> bookings = new ArrayList<Booking>();
 	private ArrayList<User> users = new ArrayList<User>();
+	private Gui gui;
 	
-	public System() {
+	public SpaceSystem() {
 	}
 	
 	public ArrayList<Room> getRooms() {
@@ -36,6 +40,10 @@ public class System {
 	public void setUsers(ArrayList<User> users) {
 		this.users = users;
 	}
+	
+	public void addGui(Gui gui) {
+		this.gui = gui;
+	}
 
 	public void sendEmail() {
 		
@@ -46,6 +54,7 @@ public class System {
 	}
 	
 	public Booking removeBooking(Booking b) {
+		return b;
 		
 	}
 	
@@ -54,6 +63,7 @@ public class System {
 	}
 	
 	public Room removeRoom(Room r) {
+		return r;
 		
 	}
 	
@@ -62,18 +72,22 @@ public class System {
 	}
 	
 	public User removeUser(User u) {
+		return u;
 		
 	}
 	
 	public User searchUser() {
+		return null;
 		
 	}
 	
 	public Room searchRoom() {
+		return null;
 		
 	}
 	
 	public Booking searchBooking() {
+		return null;
 		
 	}
 }

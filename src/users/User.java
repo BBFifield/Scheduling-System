@@ -1,6 +1,7 @@
 package users;
 
-import main.System;
+import main.SpaceSystem;
+import schedule.Booking;
 
 public class User {
 
@@ -9,9 +10,9 @@ public class User {
 	private String emailAddress;
 	private String permissions;
 	private int requestCountWeek; 
-	private System system;
+	private SpaceSystem system;
 	
-	public User(String name, String userName, String emailAddress, String permissions, int requestCountWeek, System system) {
+	public User(String name, String userName, String emailAddress, String permissions, int requestCountWeek, SpaceSystem system) {
 		this.name = name;
 		this.userName = userName;
 		this.emailAddress = emailAddress;
@@ -69,11 +70,11 @@ public class User {
 		this.requestCountWeek = requestCountWeek;
 	}
 
-	public System getSystem() {
+	public SpaceSystem getSystem() {
 		return system;
 	}
 
-	public void setSystem(System system) {
+	public void setSystem(SpaceSystem system) {
 		this.system = system;
 	}
 	

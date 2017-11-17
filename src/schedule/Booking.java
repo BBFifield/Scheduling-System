@@ -9,7 +9,6 @@ public class Booking {
 	private Room room;
 	private double timeBooked;
 	private Date dateBooked;
-
 	
 	Booking(User user, Room room, double timeBooked, Date dateBooked) {
 		this.user = user;
