@@ -1,5 +1,6 @@
-package GraphicsComponents;
+package graphicsComponents;
 import java.awt.EventQueue;
+
 
 import javax.swing.JFrame;
 import javax.swing.JComboBox;
@@ -23,12 +24,17 @@ import java.util.Calendar;
 import java.awt.Font;
 import javax.swing.JCheckBox;
 
+import main.GuiSystemManager;
+import main.SpaceSystem;
+import schedule.Booking;
+
 public class Gui {
 
 	private JFrame frame;
 	private JTable table;
 	private JTextField textField;
 	private String[] rooms = {"Gym", "Library", "EN1052", "Computer Lab"};
+	private SpaceSystem system;
 	
 	public enum Month{
 		JANUARY(31, 0), 
@@ -74,26 +80,12 @@ public class Gui {
 		lblNewLabel.setBounds(10, 45, 126, 14);
 		frame.getContentPane().add(lblNewLabel);
 		
-		JButton btnNewButton = new JButton("Submit Request");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
-		btnNewButton.setBounds(92, 378, 132, 23);
-		frame.getContentPane().add(btnNewButton);
 		
 		table = new JTable(7, 7);
 		table.setBounds(10, 97, 402, 112);
 		initializeCalendar(table);
 		frame.getContentPane().add(table);
 		
-		JButton btnRemoveBooking = new JButton("Remove Booking");
-		btnRemoveBooking.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
-		btnRemoveBooking.setBounds(258, 250, 222, 23);
-		frame.getContentPane().add(btnRemoveBooking);
 		
 		JComboBox comboBox = new JComboBox(Month.values());
 		comboBox.setBounds(10, 66, 126, 20);
@@ -106,7 +98,7 @@ public class Gui {
 		spinner.setEditor(de);
 		frame.getContentPane().add(spinner);
 		
-		JSpinner jSpinner1 = new JSpinner(new SpinnerDateModel(date, null, null, Calendar.HOUR_OF_DAY));
+		JSpinner jSpinner1 = new JSpinner(new SpinnerNumberModel(date, null, null, Calendar.HOUR_OF_DAY));
 		jSpinner1.setBounds(92, 341, 132, 20);
 		JSpinner.DateEditor de1 = new JSpinner.DateEditor(jSpinner1, "HH:mm:ss");
 		jSpinner1.setEditor(de1);
@@ -149,6 +141,37 @@ public class Gui {
 		JComboBox comboBox_1 = new JComboBox(rooms);
 		comboBox_1.setBounds(92, 279, 132, 20);
 		frame.getContentPane().add(comboBox_1);
+		
+		JButton btnNewButton = new JButton("Submit Request");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				String activityName = textField.getText();
+				if(!activityName.isEmpty()) {
+					String roomName = (String) comboBox_1.getSelectedItem();
+					Date date = (Date) spinner.getValue();
+					double duration = (Double) jSpinner1.getValue();
+					system.addBooking(new Booking(null, roomName, duration, date));
+				}
+			
+				
+			}
+		});
+		btnNewButton.setBounds(92, 378, 132, 23);
+		frame.getContentPane().add(btnNewButton);
+		
+		JButton btnRemoveBooking = new JButton("Remove Booking");
+		btnRemoveBooking.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				
+			}
+		});
+		btnRemoveBooking.setBounds(258, 250, 222, 23);
+		frame.getContentPane().add(btnRemoveBooking);
+		
+	}
+	
+	public void addSystem(SpaceSystem system) {
+		this.system = system;
 	}
 	
 	public void initializeCalendar(JTable calendar) {
@@ -166,14 +189,18 @@ public class Gui {
 		}
 	}
 	
+	
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		SpaceSystem system = new SpaceSystem();
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					Gui window = new Gui();
+					window.addSystem(system);
+					system.addGui(window);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
