@@ -83,12 +83,11 @@ public class SpaceSystem {
 		ArrayList<User> users = getUsers();
 		
 		for (int i = 0; i < users.size(); i++) {
-			if(users(i).getName().equals(userName)) {
-				
+			if(users.get(i).getName().equals(userName)) {
+				return users.get(i);
 			}
 		}
 		return null;
-		
 	}
 	
 	public Room searchRoom(String r) {

@@ -19,6 +19,8 @@ import java.awt.event.ActionEvent;
 import javax.swing.JTable;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
+import javax.swing.SpinnerNumberModel;
+
 import java.util.Date;
 import java.util.Calendar;
 import java.awt.Font;
@@ -35,25 +37,28 @@ public class Gui {
 	private JTextField textField;
 	private String[] rooms = {"Gym", "Library", "EN1052", "Computer Lab"};
 	private SpaceSystem system;
+	private String userName;
 	
 	public enum Month{
-		JANUARY(31, 0), 
-		FEBRUARY(28, 4), 
-		MARCH(31, 4), 
-		APRIL(30, 6), 
-		MAY(31, 1), 
-		JUNE(30, 4), 
-		JULY(31, 6), 
-		AUGUST(31, 2), 
-		SEPTEMBER(30, 5), 
-		OCTOBER(31, 0), 
-		NOVEMBER(30, 3), 
-		DECEMBER(31, 5);
+		JANUARY(0, 31, 0), 
+		FEBRUARY(1, 28, 4), 
+		MARCH(2, 31, 4), 
+		APRIL(3, 30, 6), 
+		MAY(4, 31, 1), 
+		JUNE(5, 30, 4), 
+		JULY(6, 31, 6), 
+		AUGUST(7, 31, 2), 
+		SEPTEMBER(8, 30, 5), 
+		OCTOBER(9, 31, 0), 
+		NOVEMBER(10, 30, 3), 
+		DECEMBER(11, 31, 5);
 		
+		private final int monthIndex;
 		private final int days;
 		private final int indexStartDay;
 		
-		Month(int days, int indexStartDay) {
+		Month(int monthIndex, int days, int indexStartDay) {
+			this.monthIndex = monthIndex;
 			this.days = days;
 			this.indexStartDay = indexStartDay;
 		}
@@ -75,6 +80,10 @@ public class Gui {
 		frame.setTitle("Space Schedule");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
+		
+		JLabel userLabel = new JLabel("Welcome " + userName);
+		userLabel.setBounds(250, 11, 232, 23);
+		frame.getContentPane().add(userLabel);
 		
 		JLabel lblNewLabel = new JLabel("Scheduled Bookings");
 		lblNewLabel.setBounds(10, 45, 126, 14);
@@ -98,10 +107,10 @@ public class Gui {
 		spinner.setEditor(de);
 		frame.getContentPane().add(spinner);
 		
-		JSpinner jSpinner1 = new JSpinner(new SpinnerNumberModel(date, null, null, Calendar.HOUR_OF_DAY));
+		JSpinner jSpinner1 = new JSpinner(new SpinnerNumberModel(1, 1, 3, 1));
 		jSpinner1.setBounds(92, 341, 132, 20);
-		JSpinner.DateEditor de1 = new JSpinner.DateEditor(jSpinner1, "HH:mm:ss");
-		jSpinner1.setEditor(de1);
+		JSpinner.NumberEditor ne1 = new JSpinner.NumberEditor(jSpinner1);
+		jSpinner1.setEditor(ne1);
 		frame.getContentPane().add(jSpinner1);
 		
 		JLabel lblNewLabel_1 = new JLabel("Request or Remove Booking");
@@ -147,10 +156,19 @@ public class Gui {
 			public void actionPerformed(ActionEvent event) {
 				String activityName = textField.getText();
 				if(!activityName.isEmpty()) {
+					
 					String roomName = (String) comboBox_1.getSelectedItem();
-					Date date = (Date) spinner.getValue();
-					double duration = (Double) jSpinner1.getValue();
-					system.addBooking(new Booking(null, roomName, duration, date));
+					Date spinnerDate = (Date) spinner.getValue();
+					Calendar date = Calendar.getInstance();
+					date.setTime(spinnerDate);
+					int day = ((int) table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()));
+					int monthIndex = ((Month) comboBox.getSelectedItem()).monthIndex;
+					date.set(Calendar.DAY_OF_MONTH, day);
+					date.set(Calendar.MONTH, monthIndex);
+					int duration = (Integer) jSpinner1.getValue();
+					
+					system.addBooking(new Booking(system.searchUser(userName), system.searchRoom(roomName), duration, date));
+					System.out.println(system.getBookings().get(0).getDate());
 				}
 			
 				
