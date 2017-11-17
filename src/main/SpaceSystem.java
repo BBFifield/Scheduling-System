@@ -50,6 +50,7 @@ public class SpaceSystem {
 	}
 	
 	public void addBooking(Booking b) {
+		bookings.add(b);
 		
 	}
 	
@@ -59,6 +60,7 @@ public class SpaceSystem {
 	}
 	
 	public void addRoom(Room r) {
+		rooms.add(r);
 		
 	}
 	
@@ -68,6 +70,7 @@ public class SpaceSystem {
 	}
 	
 	public void addUser(User u) {
+		users.add(u);
 		
 	}
 	
@@ -76,12 +79,19 @@ public class SpaceSystem {
 		
 	}
 	
-	public User searchUser() {
+	public User searchUser(String userName) {
+		ArrayList<User> users = getUsers();
+		
+		for (int i = 0; i < users.size(); i++) {
+			if(users(i).getName().equals(userName)) {
+				
+			}
+		}
 		return null;
 		
 	}
 	
-	public Room searchRoom() {
+	public Room searchRoom(String r) {
 		return null;
 		
 	}
