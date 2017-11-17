@@ -10,7 +10,7 @@ import java.util.Timer;
 
 
 
-public class LoginPanel extends JPanel
+public class LoginFrame extends JPanel
 {
     private JFrame loginFrame;
     private JTextField userNameField;
@@ -25,7 +25,7 @@ public class LoginPanel extends JPanel
      * This constructs a LoginPanel.
      * @param loginFrame - the main JFrame which this JPanel is laid upon.
      */
-    public LoginPanel(JFrame loginFrame)
+    public LoginFrame(JFrame loginFrame)
     {
         this.loginFrame = loginFrame;
         setPreferredSize(new Dimension(300,50));
