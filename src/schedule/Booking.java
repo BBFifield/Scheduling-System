@@ -1,5 +1,6 @@
 package schedule;
 
+import java.util.Calendar;
 import java.util.Date;
 import users.User;
 
@@ -8,9 +9,9 @@ public class Booking {
 	private User user;
 	private Room room;
 	private double timeBooked;
-	private Date dateBooked;
+	private Calendar dateBooked;
 	
-	Booking(User user, Room room, double timeBooked, Date dateBooked) {
+	public Booking(User user, Room room, int timeBooked, Calendar dateBooked) {
 		this.user = user;
 		this.room = room;
 		this.timeBooked = timeBooked;
@@ -29,7 +30,7 @@ public class Booking {
 		return timeBooked;
 	}
 	
-	public Date getDate() {
+	public Calendar getDate() {
 		return dateBooked;
 	}
 	
@@ -41,7 +42,7 @@ public class Booking {
 		this.room = room;
 	}
 	
-	public void setDate(Date dateBooked) {
+	public void setDate(Calendar dateBooked) {
 		this.dateBooked = dateBooked;
 	}
 	
