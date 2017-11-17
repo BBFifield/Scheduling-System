@@ -1,6 +1,7 @@
 package users;
 
 import schedule.Room;
+import users.User;
 
 public class Principal extends User {
 	

@@ -1,12 +1,14 @@
 package main;
 
 import java.util.ArrayList;
+import schedule.Room;
+import users.User;
 
 public class System {
 	
-	private ArrayList<Room> rooms = new ArrayList();
-	private ArrayList<Booking> bookings = new ArrayList();
-	private ArrayList<User> users = new ArrayList();
+	private ArrayList<Room> rooms = new ArrayList<Room>();
+	private ArrayList<Booking> bookings = new ArrayList<Booking>();
+	private ArrayList<User> users = new ArrayList<User>();
 	
 	public System() {
 	}

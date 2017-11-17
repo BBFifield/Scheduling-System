@@ -1,6 +1,7 @@
 package GraphicsComponents;
 import java.awt.EventQueue;
 
+
 import javax.swing.JFrame;
 import javax.swing.JComboBox;
 import java.awt.BorderLayout;
@@ -22,6 +23,7 @@ import java.util.Date;
 import java.util.Calendar;
 import java.awt.Font;
 import javax.swing.JCheckBox;
+import main.System;
 
 public class Gui {
 
@@ -29,6 +31,7 @@ public class Gui {
 	private JTable table;
 	private JTextField textField;
 	private String[] rooms = {"Gym", "Library", "EN1052", "Computer Lab"};
+	private System system;
 	
 	public enum Month{
 		JANUARY(31, 0), 
@@ -56,7 +59,8 @@ public class Gui {
 	/**
 	 * Create the application.
 	 */
-	public Gui() {
+	public Gui(System system) {
+		this.system = system;
 		initialize();
 	}
 
@@ -170,10 +174,12 @@ public class Gui {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		System system = new System();
+		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Gui window = new Gui();
+					Gui window = new Gui(system);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
