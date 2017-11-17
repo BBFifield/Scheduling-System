@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import schedule.Room;
 import users.User;
 import schedule.Booking;
-import graphicsComponents.Gui;
+import graphicsComponents.MainFrame;
 
 public class SpaceSystem {
 	
 	private ArrayList<Room> rooms = new ArrayList<Room>();
 	private ArrayList<Booking> bookings = new ArrayList<Booking>();
 	private ArrayList<User> users = new ArrayList<User>();
-	private Gui gui;
+	private MainFrame gui;
 	
 	public SpaceSystem() {
 	}
@@ -41,7 +41,7 @@ public class SpaceSystem {
 		this.users = users;
 	}
 	
-	public void addGui(Gui gui) {
+	public void addGui(MainFrame gui) {
 		this.gui = gui;
 	}
 
