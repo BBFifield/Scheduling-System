@@ -15,8 +15,8 @@ import java.util.Scanner;
 import javax.swing.Action;
 import main.SpaceSystem;
 
-public class LoginPage {
-	JFrame frmLoginToSpace;
+public class LoginPage extends JFrame {
+	
 	private JTextField userNameField;
 	private JTextField passwordField;
 	private JButton btnLogin;
@@ -26,42 +26,44 @@ public class LoginPage {
 	 */
 	public LoginPage(SpaceSystem system) {
 		this.system = system;
-		frmLoginToSpace = new JFrame();
-		frmLoginToSpace.setTitle("Login to Space System");
-		frmLoginToSpace.getContentPane().setLayout(null);
+		this.setSize(400, 400);
+		this.setTitle("Login to Space System");
+		this.getContentPane().setLayout(null);
 		
 		userNameField = new JTextField();
 		userNameField.setBounds(117, 71, 161, 20);
-		frmLoginToSpace.getContentPane().add(userNameField);
+		this.getContentPane().add(userNameField);
 		userNameField.setColumns(10);
 		
 		passwordField = new JTextField();
 		passwordField.setBounds(117, 127, 161, 20);
-		frmLoginToSpace.getContentPane().add(passwordField);
+		this.getContentPane().add(passwordField);
 		passwordField.setColumns(10);
 		
 		JLabel lblUserName = new JLabel("User Name");
 		lblUserName.setBounds(170, 46, 108, 14);
-		frmLoginToSpace.getContentPane().add(lblUserName);
+		this.getContentPane().add(lblUserName);
 		
 		JLabel lblPassword = new JLabel("Password");
 		lblPassword.setBounds(170, 102, 46, 14);
-		frmLoginToSpace.getContentPane().add(lblPassword);
+		this.getContentPane().add(lblPassword);
 		
 		btnLogin = new JButton("Login");
+		btnLogin.addActionListener(new LoginListener());
 		btnLogin.setBounds(150, 158, 89, 23);
-		frmLoginToSpace.getContentPane().add(btnLogin);
+		this.getContentPane().add(btnLogin);
 	}
 	
 	public boolean validate(String userName, String password) {
-		File usersFile = new File("../resources/users.txt");
+		
+		File usersFile = new File("resources/users.txt");
+		Scanner in = null;
 		try {
-			Scanner in = new Scanner(usersFile);
-			String line;
+			in = new Scanner(usersFile);
 			String userNameCurrent = "";
 			String passwordCurrent = "";
-			while(!in.hasNextLine()) {
-				line = in.nextLine();
+			
+			while(in.hasNextLine()) {
 				String columnCurrent;
 				for(int i = 0; i < 3; i++) {
 					columnCurrent = in.next();
@@ -75,13 +77,18 @@ public class LoginPage {
 				if(userNameCurrent.equals(userName) && passwordCurrent.equals(password)) {
 					return true;
 				}
+				in.nextLine();
 			}
 			
 		}
 		catch(FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		
+		finally {
+			if(in != null) {
+				in.close();
+			}
+		}
 		return false;
 	}
 	
@@ -90,20 +97,18 @@ public class LoginPage {
 			if(e.getSource() == btnLogin) {
 				String userName = userNameField.getText();
 				String password = passwordField.getText();
-				if(userName.isEmpty()) {
-					JOptionPane.showMessageDialog(frmLoginToSpace, "Please provide a username");
+				System.out.println(userName);
+				if(validate(userName, password)) {
+					MainFrame window = new MainFrame();
+					window.addSystem(system);
+					system.addGui(window);
+					window.setVisible(true);
+					LoginPage.this.setVisible(false);
 				}
 				else {
-					if(validate(userName, password)) {
-						MainFrame window = new MainFrame();
-						window.addSystem(system);
-						system.addGui(window);
-						window.frame.setVisible(true);
-					}
+					JOptionPane.showMessageDialog(LoginPage.this, "Wrong username or password entered");
 				}
 			}
-			
 		}
 	}
-	
 }

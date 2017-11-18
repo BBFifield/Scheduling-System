@@ -13,6 +13,7 @@ public class SpaceSystem {
 	private ArrayList<Room> rooms = new ArrayList<Room>();
 	private ArrayList<Booking> bookings = new ArrayList<Booking>();
 	private ArrayList<User> users = new ArrayList<User>();
+	private User userLoggedIn;
 	private MainFrame gui;
 	
 	public SpaceSystem() {}
@@ -39,6 +40,14 @@ public class SpaceSystem {
 
 	public void setUsers(ArrayList<User> users) {
 		this.users = users;
+	}
+	
+	public User getUserLoggedIn() {
+		return userLoggedIn;
+	}
+
+	public void setUserLoggedIn(User userLoggedIn) {
+		this.userLoggedIn = userLoggedIn;
 	}
 	
 	public void addGui(MainFrame gui) {
