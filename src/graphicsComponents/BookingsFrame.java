@@ -20,8 +20,7 @@ public class BookingsFrame {
 		frame.add(panel);
 		frame.setAlwaysOnTop(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setPreferredSize(new Dimension(400, 400));
 		frame.setVisible(true);
-		
+		frame.setSize(500,500);	
 	}
 }
