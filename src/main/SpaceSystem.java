@@ -1,7 +1,10 @@
 package main;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Scanner;
 
 import schedule.Room;
 import users.User;
@@ -14,7 +17,11 @@ public class SpaceSystem {
 	private ArrayList<Booking> bookings = new ArrayList<Booking>();
 	private ArrayList<User> users = new ArrayList<User>();
 	private User userLoggedIn;
+	private boolean usersLoaded = false;
 	private MainFrame gui;
+	
+	File usersFile = new File("resources/users.txt");
+	Scanner in = null;
 	
 	public SpaceSystem() {}
 	
@@ -144,5 +151,57 @@ public class SpaceSystem {
 		
 		return null;
 		
+	}
+	
+	public boolean validate(String userName, String password) {
+		
+		try {
+			in = new Scanner(usersFile);
+			String userNameCurrent = "";
+			String passwordCurrent = "";
+			
+			while(in.hasNextLine()) {
+				String columnCurrent;
+				for(int i = 0; i < 3; i++) {
+					columnCurrent = in.next();
+					if(i == 1) {
+						userNameCurrent = columnCurrent;
+					}
+					else if(i == 2) {
+						passwordCurrent = columnCurrent;
+					}
+				}
+				if(userNameCurrent.equals(userName) && passwordCurrent.equals(password)) {
+					if(!usersLoaded) {
+						loadUsers();
+					}
+					return true;
+				}
+				in.nextLine();
+			}
+			
+		}
+		catch(FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		finally {
+			if(in != null) {
+				in.close();
+			}
+		}
+		return false;
+	}
+	
+	public void loadUsers() {
+		while(in.hasNextLine()) {
+			String name = in.next();
+			String username = in.next();
+			String password = in.next();
+			String email = in.next();
+			String permissions = in.next();
+			int requestCountWeek = Integer.parseInt(in.next());
+			users.add(new User(name,username,password,email,permissions,requestCountWeek,this));
+			in.nextLine();
+		}
 	}
 }

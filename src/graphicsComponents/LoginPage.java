@@ -27,6 +27,7 @@ public class LoginPage extends JFrame {
 	public LoginPage(SpaceSystem system) {
 		this.system = system;
 		this.setSize(400, 400);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Login to Space System");
 		this.getContentPane().setLayout(null);
 		
@@ -54,51 +55,13 @@ public class LoginPage extends JFrame {
 		this.getContentPane().add(btnLogin);
 	}
 	
-	public boolean validate(String userName, String password) {
-		
-		File usersFile = new File("resources/users.txt");
-		Scanner in = null;
-		try {
-			in = new Scanner(usersFile);
-			String userNameCurrent = "";
-			String passwordCurrent = "";
-			
-			while(in.hasNextLine()) {
-				String columnCurrent;
-				for(int i = 0; i < 3; i++) {
-					columnCurrent = in.next();
-					if(i == 1) {
-						userNameCurrent = columnCurrent;
-					}
-					else if(i == 2) {
-						passwordCurrent = columnCurrent;
-					}
-				}
-				if(userNameCurrent.equals(userName) && passwordCurrent.equals(password)) {
-					return true;
-				}
-				in.nextLine();
-			}
-			
-		}
-		catch(FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		finally {
-			if(in != null) {
-				in.close();
-			}
-		}
-		return false;
-	}
-	
 	class LoginListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if(e.getSource() == btnLogin) {
 				String userName = userNameField.getText();
 				String password = passwordField.getText();
 				System.out.println(userName);
-				if(validate(userName, password)) {
+				if(system.validate(userName, password)) {
 					MainFrame window = new MainFrame();
 					window.addSystem(system);
 					system.addGui(window);
