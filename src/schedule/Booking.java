@@ -1,5 +1,6 @@
 package schedule;
 
+import java.util.Calendar;
 import java.util.Date;
 import users.User;
 
@@ -7,15 +8,16 @@ import users.User;
 public class Booking {
 	private User user;
 	private Room room;
-	private double timeBooked;
-	private Date dateBooked;
+	private int timeBooked;
+	private Calendar dateBooked;
+	private boolean approved = false;
 	
-	Booking(User user, Room room, double timeBooked, Date dateBooked) {
+	public Booking(User user, Room room, int timeBooked, Calendar dateBooked) {
 		this.user = user;
 		this.room = room;
 		this.timeBooked = timeBooked;
 		this.dateBooked = dateBooked;
-		}
+	}
 	
 	public User getUser() {
 		return user;
@@ -25,11 +27,11 @@ public class Booking {
 		return room;
 	}
 	
-	public double getTime() {
+	public int getTime() {
 		return timeBooked;
 	}
 	
-	public Date getDate() {
+	public Calendar getDate() {
 		return dateBooked;
 	}
 	
@@ -41,15 +43,20 @@ public class Booking {
 		this.room = room;
 	}
 	
-	public void setDate(Date dateBooked) {
+	public void setDate(Calendar dateBooked) {
 		this.dateBooked = dateBooked;
 	}
 	
-	public void setTime(double timeBooked) {
+	public void setTime(int timeBooked) {
 		this.timeBooked = timeBooked;
 	}
 	
-	
-	
+	public boolean isApproved() {
+		return approved;
 	}
+	
+	public void approveBooking() {
+		approved = true;
+	}
+}
 

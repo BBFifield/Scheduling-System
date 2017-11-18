@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import schedule.Room;
 import users.User;
 import schedule.Booking;
-import graphicsComponents.Gui;
+import graphicsComponents.MainFrame;
 
 public class SpaceSystem {
 	
 	private ArrayList<Room> rooms = new ArrayList<Room>();
 	private ArrayList<Booking> bookings = new ArrayList<Booking>();
 	private ArrayList<User> users = new ArrayList<User>();
-	private Gui gui;
+	private MainFrame gui;
 	
 	public SpaceSystem() {
 	}
@@ -41,7 +41,7 @@ public class SpaceSystem {
 		this.users = users;
 	}
 	
-	public void addGui(Gui gui) {
+	public void addGui(MainFrame gui) {
 		this.gui = gui;
 	}
 
@@ -50,6 +50,7 @@ public class SpaceSystem {
 	}
 	
 	public void addBooking(Booking b) {
+		bookings.add(b);
 		
 	}
 	
@@ -59,6 +60,7 @@ public class SpaceSystem {
 	}
 	
 	public void addRoom(Room r) {
+		rooms.add(r);
 		
 	}
 	
@@ -68,6 +70,7 @@ public class SpaceSystem {
 	}
 	
 	public void addUser(User u) {
+		users.add(u);
 		
 	}
 	
@@ -76,12 +79,18 @@ public class SpaceSystem {
 		
 	}
 	
-	public User searchUser() {
-		return null;
+	public User searchUser(String userName) {
+		ArrayList<User> users = getUsers();
 		
+		for (int i = 0; i < users.size(); i++) {
+			if(users.get(i).getName().equals(userName)) {
+				return users.get(i);
+			}
+		}
+		return null;
 	}
 	
-	public Room searchRoom() {
+	public Room searchRoom(String r) {
 		return null;
 		
 	}
