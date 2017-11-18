@@ -35,9 +35,8 @@ import schedule.Booking;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-public class MainFrame {
+public class MainFrame extends JFrame {
 
-	private JFrame frame;
 	private JTable table;
 	private JComboBox monthCB;
 	private JSpinner timeSpinner;
@@ -84,25 +83,25 @@ public class MainFrame {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 522, 465);
-		frame.setTitle("Space Schedule");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(null);
+		
+		this.setBounds(100, 100, 522, 465);
+		this.setTitle("Space Schedule");
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.getContentPane().setLayout(null);
 		
 		JLabel userLabel = new JLabel("Welcome " + userName);
 		userLabel.setBounds(250, 11, 232, 23);
-		frame.getContentPane().add(userLabel);
+		this.getContentPane().add(userLabel);
 		
 		JLabel lblNewLabel = new JLabel("Scheduled Bookings");
 		lblNewLabel.setBounds(10, 45, 126, 14);
-		frame.getContentPane().add(lblNewLabel);
+		this.getContentPane().add(lblNewLabel);
 		
 		
 		table = new JTable(7, 7);
 		table.setBounds(10, 97, 402, 112);
 		initializeCalendar(table);
-		frame.getContentPane().add(table);
+		this.getContentPane().add(table);
 		
 		
 		monthCB = new JComboBox(Month.values());
@@ -134,54 +133,54 @@ public class MainFrame {
 					}
 			}
 	   });
-		frame.getContentPane().add(monthCB);
+		this.getContentPane().add(monthCB);
 		
 		Date date = new Date();
 		timeSpinner = new JSpinner(new SpinnerDateModel(date, null, null, Calendar.HOUR_OF_DAY));
 		timeSpinner.setBounds(92, 310, 132, 20);
 		JSpinner.DateEditor de = new JSpinner.DateEditor(timeSpinner, "HH:mm:ss");
 		timeSpinner.setEditor(de);
-		frame.getContentPane().add(timeSpinner);
+		this.getContentPane().add(timeSpinner);
 		
 		durationSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 3, 1));
 		durationSpinner.setBounds(92, 341, 132, 20);
 		JSpinner.NumberEditor ne1 = new JSpinner.NumberEditor(durationSpinner);
 		durationSpinner.setEditor(ne1);
-		frame.getContentPane().add(durationSpinner);
+		this.getContentPane().add(durationSpinner);
 		
 		JLabel lblNewLabel_1 = new JLabel("Request or Remove Booking");
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblNewLabel_1.setBounds(10, 11, 232, 23);
-		frame.getContentPane().add(lblNewLabel_1);
+		this.getContentPane().add(lblNewLabel_1);
 		
 		JLabel lblNewLabel_3 = new JLabel("Request");
 		lblNewLabel_3.setBounds(128, 220, 77, 14);
-		frame.getContentPane().add(lblNewLabel_3);
+		this.getContentPane().add(lblNewLabel_3);
 		
 		JLabel lblNewLabel_4 = new JLabel("Length");
 		lblNewLabel_4.setBounds(10, 344, 46, 14);
-		frame.getContentPane().add(lblNewLabel_4);
+		this.getContentPane().add(lblNewLabel_4);
 		
 		JLabel lblNewLabel_5 = new JLabel("Time");
 		lblNewLabel_5.setBounds(10, 313, 46, 14);
-		frame.getContentPane().add(lblNewLabel_5);
+		this.getContentPane().add(lblNewLabel_5);
 		
 		textField = new JTextField();
 		textField.setBounds(92, 251, 132, 19);
-		frame.getContentPane().add(textField);
+		this.getContentPane().add(textField);
 		textField.setColumns(10);
 		
 		JLabel lblActivityName = new JLabel("Activity Name");
 		lblActivityName.setBounds(10, 254, 97, 14);
-		frame.getContentPane().add(lblActivityName);
+		this.getContentPane().add(lblActivityName);
 		
 		JLabel lblNewLabel_6 = new JLabel("Room ");
 		lblNewLabel_6.setBounds(10, 279, 46, 14);
-		frame.getContentPane().add(lblNewLabel_6);
+		this.getContentPane().add(lblNewLabel_6);
 		
 		roomCB = new JComboBox(rooms);
 		roomCB.setBounds(92, 279, 132, 20);
-		frame.getContentPane().add(roomCB);
+		this.getContentPane().add(roomCB);
 		
 		JButton btnNewButton = new JButton("Submit Request");
 		btnNewButton.addActionListener(new ActionListener() {
@@ -190,7 +189,7 @@ public class MainFrame {
 			}
 		});
 		btnNewButton.setBounds(92, 378, 132, 23);
-		frame.getContentPane().add(btnNewButton);
+		this.getContentPane().add(btnNewButton);
 		
 		JButton btnRemoveBooking = new JButton("Remove Booking");
 		btnRemoveBooking.addActionListener(new ActionListener() {
@@ -199,11 +198,11 @@ public class MainFrame {
 			}
 		});
 		btnRemoveBooking.setBounds(260, 309, 222, 23);
-		frame.getContentPane().add(btnRemoveBooking);
+		this.getContentPane().add(btnRemoveBooking);
 		
 		JLabel lblActions = new JLabel("Actions");
 		lblActions.setBounds(336, 220, 46, 14);
-		frame.getContentPane().add(lblActions);
+		this.getContentPane().add(lblActions);
 		
 		JButton myBookingsButton = new JButton("My Bookings");
 		myBookingsButton.addActionListener(new ActionListener() {
@@ -212,7 +211,7 @@ public class MainFrame {
 			}
 		});
 		myBookingsButton.setBounds(261, 279, 221, 23);
-		frame.getContentPane().add(myBookingsButton);
+		this.getContentPane().add(myBookingsButton);
 		
 		JButton selectDayBookingsButton = new JButton("Bookings on Selected Day");
 		selectDayBookingsButton.addActionListener(new ActionListener() {
@@ -220,7 +219,7 @@ public class MainFrame {
 			}
 		});
 		selectDayBookingsButton.setBounds(260, 250, 221, 23);
-		frame.getContentPane().add(selectDayBookingsButton);
+		this.getContentPane().add(selectDayBookingsButton);
 		
 	}
 	
@@ -249,11 +248,11 @@ public class MainFrame {
 				System.out.println(system.getBookings().get(0).getDate());
 			}
 			else {
-				JOptionPane.showMessageDialog(frame, "No date selected in table");
+				JOptionPane.showMessageDialog(this, "No date selected in table");
 			}
 		}
 		else {
-			JOptionPane.showMessageDialog(frame, "No activity name specified for booking");
+			JOptionPane.showMessageDialog(this, "No activity name specified for booking");
 		}
 	
 	}
@@ -297,10 +296,8 @@ public class MainFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MainFrame window = new MainFrame();
-					window.addSystem(system);
-					system.addGui(window);
-					window.frame.setVisible(true);
+					LoginPage loginFrame = new LoginPage(system);
+					loginFrame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
