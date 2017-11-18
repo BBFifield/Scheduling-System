@@ -107,6 +107,33 @@ public class MainFrame {
 		
 		monthCB = new JComboBox(Month.values());
 		monthCB.setBounds(10, 66, 126, 20);
+		monthCB.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+	  
+				JComboBox comboBox = (JComboBox) event.getSource();
+
+					Month selected = (Month) comboBox.getSelectedItem();
+					
+					
+					int dayCount = 0;
+					
+					for(int i = 1; i < 7; i++) {
+						for(int j = 0; j < 7 && dayCount < selected.days; j++) {
+							if(j < selected.indexStartDay && i == 1) {
+								table.setValueAt(null, 1, j);
+							}
+							else if(i == 1) {
+								dayCount++;
+								table.setValueAt(dayCount ,1, j);
+							}
+							else {
+								dayCount++;
+								table.setValueAt(dayCount ,i, j);
+							}
+						}
+					}
+			}
+	   });
 		frame.getContentPane().add(monthCB);
 		
 		Date date = new Date();
@@ -266,7 +293,7 @@ public class MainFrame {
 	
 	
 	public static void main(String[] args) {
-		SpaceSystem system = new SpaceSystem();
+		final SpaceSystem system = new SpaceSystem();
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
