@@ -1,12 +1,14 @@
 package users;
 
-import main.SpaceSystem;
-import schedule.Booking;
+import java.io.Serializable;
 
 import main.SpaceSystem;
 import schedule.Booking;
 
-public class User {
+import main.SpaceSystem;
+import schedule.Booking;
+
+public class User implements Serializable {
 
 	private String name;
 	private String userName;

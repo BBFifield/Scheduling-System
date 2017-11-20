@@ -1,9 +1,16 @@
 package main;
 
+import java.io.EOFException;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -12,22 +19,27 @@ import users.User;
 import schedule.Booking;
 import graphicsComponents.MainFrame;
 
-import schedule.Room;
-import users.User;
-import schedule.Booking;
-
 public class SpaceSystem {
 	
-	private ArrayList<Room> rooms = new ArrayList<Room>();
-	private HashMap<User, ArrayList<Booking>> bookings = new HashMap<User, ArrayList<Booking>>();
-	private HashMap<String,User> users = new HashMap<String,User>();
+	private HashMap<String,Room> rooms = new HashMap<>();
+	private HashMap<User, ArrayList<Booking>> bookings = new HashMap<>();
+	private HashMap<String,User> users = new HashMap<>();
 	private MainFrame gui;
 	private User userLoggedIn;
-	private boolean usersLoaded = false;
+	private boolean resourcesLoaded = false;
 
+	File loginInfo = new File("resources/loginInfo.txt");
+	Scanner in = null;
 	
 	File usersFile = new File("resources/users.txt");
-	Scanner in = null;
+	File roomsFile = new File("resources/rooms.txt");
+	File bookingsFile = new File("resources/bookings.txt");
+	
+	FileInputStream fis;
+	ObjectInputStream ois;
+	
+	FileOutputStream fos;
+	ObjectOutputStream oos;
 	
 	public SpaceSystem() {}
 	
@@ -39,11 +51,11 @@ public class SpaceSystem {
 		this.userLoggedIn = userLoggedIn;
 	}
 	
-	public ArrayList<Room> getRooms() {
+	public HashMap<String,Room> getRooms() {
 		return rooms;
 	}
 
-	public void setRooms(ArrayList<Room> rooms) {
+	public void setRooms(HashMap<String,Room> rooms) {
 		this.rooms = rooms;
 	}
 
@@ -86,18 +98,11 @@ public class SpaceSystem {
 
 	
 	public void addRoom(Room r) {
-		rooms.add(r);
-		
+		rooms.put(r.getRoomId(), r);
 	}
 	
 	public void removeRoom(Room r) {
-		Iterator <Room> roomIterator = rooms.iterator();
-		while (roomIterator.hasNext()) {
-			Room r2 = roomIterator.next();
-			if (r2.getRoomId().equals(r.getRoomId())) {
-				rooms.remove(r2);
-			}
-		}
+		rooms.remove(r);	
 	}
 	
 	public void addUser(User u) {
@@ -113,61 +118,39 @@ public class SpaceSystem {
 	}
 	
 	public Room searchRoom(String r) {
-		ArrayList<Room> rooms = getRooms();
-		
-		for (int i = 0; i < rooms.size(); i++) {
-			if(rooms.get(i).getRoomId().equals(r)) {
-				return rooms.get(i);
-			}
-		}
-		return null;
-		
+		return rooms.get(r);
 	}
 	
-	public Booking searchBooking(String b) {
-		ArrayList<Booking> bookings = getBookings();
-		
-		for (int i = 0; i < bookings.size(); i++) {
-			if(bookings.get(i).equals(b)) {
-				return bookings.get(i);
-			}
-		}
-		return null;
+	public Booking searchBooking(User u) {
 		
 	}
 	
 	public boolean validate(String userName, String password) {
-		
 		try {
-			in = new Scanner(usersFile);
+			in = new Scanner(loginInfo);
 			String userNameCurrent = "";
 			String passwordCurrent = "";
 			
 			while(in.hasNextLine()) {
-				String columnCurrent;
-				for(int i = 0; i < 3; i++) {
-					columnCurrent = in.next();
-					if(i == 1) {
-						userNameCurrent = columnCurrent;
-					}
-					else if(i == 2) {
-						passwordCurrent = columnCurrent;
-					}
-				}
+				userNameCurrent = in.next();
+				passwordCurrent = in.next();
 				if(userNameCurrent.equals(userName) && passwordCurrent.equals(password)) {
-					if(!usersLoaded) {
-						loadUsers();
+					if(!resourcesLoaded) {
+						loadResources();
 						setUserLoggedIn(users.get(userName)); 
 					}
 					return true;
 				}
-				in.nextLine();
 			}
 			
 		}
 		catch(FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		catch(ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		
 		finally {
 			if(in != null) {
 				in.close();
@@ -176,17 +159,55 @@ public class SpaceSystem {
 		return false;
 	}
 	
-	public void loadUsers() throws FileNotFoundException {
-		in = new Scanner(usersFile);
-		while(in.hasNextLine()) {
-			String name = in.next();
-			String username = in.next();
-			String password = in.next();
-			String email = in.next();
-			String permissions = in.next();
-			int requestCountWeek = Integer.parseInt(in.next());
-			users.put(username, new User(name,username,password,email,permissions,requestCountWeek,this));
+	public void loadResources() throws ClassNotFoundException {
+		try {
+			//fos = new FileOutputStream(usersFile);
+			//oos = new ObjectOutputStream(fos);
+			//oos.writeObject(new User("Brandon", "n", "1", "blah@gmail.com", "req", 0, null));
+			
+			fis = new FileInputStream(usersFile); 
+			ois = new ObjectInputStream(fis);
+			while(true) {
+				User u = (User) ois.readObject();
+				addUser(u);
+			}
 		}
-		usersLoaded = true;
+		catch(IOException e) {
+			System.out.println("User objects loaded");
+		}
+		
+		try {
+			//fos = new FileOutputStream(roomsFile);
+			//oos = new ObjectOutputStream(fos);
+			//oos.writeObject(new Room("EN1052", 3.5));
+			
+			fis = new FileInputStream(roomsFile); 
+			ois = new ObjectInputStream(fis);
+			while(true) {
+				Room r = (Room) ois.readObject();
+				addRoom(r);
+			}
+		}
+		catch(IOException e) {
+			System.out.println("Room objects loaded");
+		}
+		
+		try {
+			//fos = new FileOutputStream(bookingsFile);
+			//oos = new ObjectOutputStream(fos);
+			//oos.writeObject(new Booking(userLoggedIn, null, 0, null));
+			
+			fis = new FileInputStream(bookingsFile); 
+			ois = new ObjectInputStream(fis);
+			while(true) {
+				Booking b = (Booking) ois.readObject();
+				addBooking(b);
+			}
+		}
+		catch(IOException e) {
+			System.out.println("Booking objects loaded");
+		}
+		
+		resourcesLoaded = true;
 	}
 }

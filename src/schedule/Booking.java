@@ -1,11 +1,12 @@
 package schedule;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import users.User;
 
 
-public class Booking {
+public class Booking implements Serializable {
 	private User user;
 	private Room room;
 	private int timeBooked;
