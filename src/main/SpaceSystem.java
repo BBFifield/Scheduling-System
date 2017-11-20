@@ -2,23 +2,28 @@ package main;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Scanner;
 
 import schedule.Room;
 import users.User;
 import schedule.Booking;
 import graphicsComponents.MainFrame;
 
+import schedule.Room;
+import users.User;
+import schedule.Booking;
+
 public class SpaceSystem {
 	
 	private ArrayList<Room> rooms = new ArrayList<Room>();
 	private ArrayList<Booking> bookings = new ArrayList<Booking>();
 	private ArrayList<User> users = new ArrayList<User>();
+	private MainFrame gui;
 	private User userLoggedIn;
 	private boolean usersLoaded = false;
-	private MainFrame gui;
+
 	
 	File usersFile = new File("resources/users.txt");
 	Scanner in = null;
@@ -49,19 +54,12 @@ public class SpaceSystem {
 		this.users = users;
 	}
 	
-	public User getUserLoggedIn() {
-		return userLoggedIn;
-	}
-
-	public void setUserLoggedIn(User userLoggedIn) {
-		this.userLoggedIn = userLoggedIn;
-	}
-	
 	public void addGui(MainFrame gui) {
 		this.gui = gui;
 	}
 
 	public void sendEmail() {
+		
 		
 	}
 	
@@ -77,11 +75,8 @@ public class SpaceSystem {
 			if (b2.getRoom().equals(b.getRoom()) && b2.getTime() == b.getTime()) {
 				 bookings.remove(b2);
 			}
-				
-	}
-		
-		
-	}
+		}
+		}
 	
 	public void addRoom(Room r) {
 		rooms.add(r);
@@ -110,11 +105,7 @@ public class SpaceSystem {
 			if (u2.getUserName().equals(u.getUserName())) {
 				users.remove(u2);
 			}
-			
-			
 		}
-	
-		
 	}
 	
 	public User searchUser(String userName) {
@@ -148,12 +139,11 @@ public class SpaceSystem {
 				return bookings.get(i);
 			}
 		}
-		
 		return null;
 		
 	}
 	
-	public boolean validate(String userName, String password) {
+public boolean validate(String userName, String password) {
 		
 		try {
 			in = new Scanner(usersFile);

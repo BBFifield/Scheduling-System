@@ -3,6 +3,9 @@ package users;
 import main.SpaceSystem;
 import schedule.Booking;
 
+import main.SpaceSystem;
+import schedule.Booking;
+
 public class User {
 
 	private String name;
