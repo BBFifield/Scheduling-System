@@ -1,17 +1,8 @@
 package graphicsComponents;
 import java.awt.EventQueue;
 
-
-import javax.swing.JFrame;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridLayout;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JList;
@@ -29,24 +20,20 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.awt.Font;
-import javax.swing.JCheckBox;
+
 
 import main.SpaceSystem;
 import schedule.Booking;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.DefaultListModel;
 
 public class MainFrame extends JPanel {
-
-
+	
 	private JTable calendar;
 	private JComboBox monthCB;
 	private JSpinner timeSpinner;
 	private JSpinner durationSpinner;
 	private JComboBox roomCB;
 	private JTextField textField;
-	private String[] rooms = {"Gym", "Library", "EN1052", "Computer Lab"};
 	private SpaceSystem system;
 	private JLabel userLabel;
 	private JList<String> bookingsList;
@@ -156,7 +143,8 @@ public class MainFrame extends JPanel {
 		lblNewLabel_6.setBounds(10, 279, 46, 14);
 		this.add(lblNewLabel_6);
 		
-		roomCB = new JComboBox(rooms);
+		roomCB = new JComboBox();
+		initializeRooms();
 		roomCB.setBounds(92, 279, 132, 20);
 		this.add(roomCB);
 		
@@ -295,7 +283,9 @@ public class MainFrame extends JPanel {
 		}
 	}
 	
-	
+	public void initializeRooms() {
+		
+	}
 	
 	
 	public static void main(String[] args) {
