@@ -3,24 +3,37 @@ package users;
 import main.SpaceSystem;
 import schedule.Booking;
 
+import main.SpaceSystem;
+import schedule.Booking;
+
 public class User {
 
 	private String name;
 	private String userName;
+	private String password;
 	private String emailAddress;
 	private String permissions;
 	private int requestCountWeek; 
 	private SpaceSystem system;
 	
-	public User(String name, String userName, String emailAddress, String permissions, int requestCountWeek, SpaceSystem system) {
+	public User(String name, String userName, String password, String emailAddress, String permissions, int requestCountWeek, SpaceSystem system) {
 		this.name = name;
 		this.userName = userName;
+		this.password = password;
 		this.emailAddress = emailAddress;
 		this.permissions = permissions;
 		this.requestCountWeek = requestCountWeek;
 		this.system = system;
 	}
 	
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 	public void requestBooking() {
 		
 	}
