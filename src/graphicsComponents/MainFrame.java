@@ -39,6 +39,7 @@ import javax.swing.DefaultListModel;
 
 public class MainFrame extends JPanel {
 
+
 	private JTable calendar;
 	private JComboBox monthCB;
 	private JSpinner timeSpinner;
@@ -210,7 +211,6 @@ public class MainFrame extends JPanel {
 		JLabel lblBookings = new JLabel("Bookings");
 		lblBookings.setBounds(10, 424, 112, 14);
 		add(lblBookings);
-		
 	}
 	
 	public void setUserLabel(String userLabel) {
@@ -303,8 +303,12 @@ public class MainFrame extends JPanel {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					LoginPage loginFrame = new LoginPage(system);
-					loginFrame.setVisible(true);
+					LoginPage login = new LoginPage(system);
+					login.setVisible(true);
+					MainFrame window = new MainFrame();
+					window.addSystem(system);
+					system.addGui(window);
+					window.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

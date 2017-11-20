@@ -2,29 +2,42 @@ package main;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Scanner;
 
 import schedule.Room;
 import users.User;
 import schedule.Booking;
 import graphicsComponents.MainFrame;
 
+import schedule.Room;
+import users.User;
+import schedule.Booking;
+
 public class SpaceSystem {
 	
 	private ArrayList<Room> rooms = new ArrayList<Room>();
 	private HashMap<User, ArrayList<Booking>> bookings = new HashMap<User, ArrayList<Booking>>();
 	private HashMap<String,User> users = new HashMap<String,User>();
+	private MainFrame gui;
 	private User userLoggedIn;
 	private boolean usersLoaded = false;
-	private MainFrame gui;
+
 	
 	File usersFile = new File("resources/users.txt");
 	Scanner in = null;
 	
 	public SpaceSystem() {}
+	
+	public User getUserLoggedIn() {
+		return userLoggedIn;
+	}
+
+	public void setUserLoggedIn(User userLoggedIn) {
+		this.userLoggedIn = userLoggedIn;
+	}
 	
 	public ArrayList<Room> getRooms() {
 		return rooms;
@@ -50,19 +63,12 @@ public class SpaceSystem {
 		this.users = users;
 	}
 	
-	public User getUserLoggedIn() {
-		return userLoggedIn;
-	}
-
-	public void setUserLoggedIn(User userLoggedIn) {
-		this.userLoggedIn = userLoggedIn;
-	}
-	
 	public void addGui(MainFrame gui) {
 		this.gui = gui;
 	}
 
 	public void sendEmail() {
+		
 		
 	}
 	
@@ -77,7 +83,7 @@ public class SpaceSystem {
 	public void removeBooking(Booking b) {
 		bookings.get(b.getUser()).remove(b);		
 	}
-		
+
 	
 	public void addRoom(Room r) {
 		rooms.add(r);
@@ -126,7 +132,6 @@ public class SpaceSystem {
 				return bookings.get(i);
 			}
 		}
-		
 		return null;
 		
 	}
@@ -152,7 +157,7 @@ public class SpaceSystem {
 				if(userNameCurrent.equals(userName) && passwordCurrent.equals(password)) {
 					if(!usersLoaded) {
 						loadUsers();
-						userLoggedIn = users.get(userName); 
+						setUserLoggedIn(users.get(userName)); 
 					}
 					return true;
 				}
