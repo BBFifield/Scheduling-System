@@ -58,5 +58,13 @@ public class Booking {
 	public void approveBooking() {
 		approved = true;
 	}
+	
+	public String toString() {
+		System.out.println(user.getUserName());
+		System.out.println(room.getRoomId());
+		System.out.println(timeBooked);
+		System.out.println(dateBooked.getTime());
+		return user.getUserName() + " " + room.getRoomId() + " " + timeBooked + " " + dateBooked.getTime();
+	}
 }
 

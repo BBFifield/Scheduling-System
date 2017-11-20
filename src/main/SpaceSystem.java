@@ -1,7 +1,11 @@
 package main;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Scanner;
 
 import schedule.Room;
 import users.User;
@@ -11,10 +15,14 @@ import graphicsComponents.MainFrame;
 public class SpaceSystem {
 	
 	private ArrayList<Room> rooms = new ArrayList<Room>();
-	private ArrayList<Booking> bookings = new ArrayList<Booking>();
-	private ArrayList<User> users = new ArrayList<User>();
+	private HashMap<User, ArrayList<Booking>> bookings = new HashMap<User, ArrayList<Booking>>();
+	private HashMap<String,User> users = new HashMap<String,User>();
 	private User userLoggedIn;
+	private boolean usersLoaded = false;
 	private MainFrame gui;
+	
+	File usersFile = new File("resources/users.txt");
+	Scanner in = null;
 	
 	public SpaceSystem() {}
 	
@@ -26,19 +34,19 @@ public class SpaceSystem {
 		this.rooms = rooms;
 	}
 
-	public ArrayList<Booking> getBookings() {
+	public HashMap<User, ArrayList<Booking>> getBookings() {
 		return bookings;
 	}
 
-	public void setBookings(ArrayList<Booking> bookings) {
+	public void setBookings(HashMap<User, ArrayList<Booking>> bookings) {
 		this.bookings = bookings;
 	}
 
-	public ArrayList<User> getUsers() {
+	public HashMap<String,User> getUsers() {
 		return users;
 	}
 
-	public void setUsers(ArrayList<User> users) {
+	public void setUsers(HashMap<String,User> users) {
 		this.users = users;
 	}
 	
@@ -59,22 +67,17 @@ public class SpaceSystem {
 	}
 	
 	public void addBooking(Booking b) {
-		bookings.add(b);
+		if(bookings.get(b.getUser()) == null) {
+			bookings.put(b.getUser(), new ArrayList<Booking>());
+		}
+		bookings.get(b.getUser()).add(b);
 		
 	}
 	
 	public void removeBooking(Booking b) {
-		Iterator <Booking> bookingIterator = bookings.iterator();
-		while (bookingIterator.hasNext()) {
-			Booking b2 = bookingIterator.next();
-			if (b2.getRoom().equals(b.getRoom()) && b2.getTime() == b.getTime()) {
-				 bookings.remove(b2);
-			}
-				
+		bookings.get(b.getUser()).remove(b);		
 	}
 		
-		
-	}
 	
 	public void addRoom(Room r) {
 		rooms.add(r);
@@ -92,33 +95,15 @@ public class SpaceSystem {
 	}
 	
 	public void addUser(User u) {
-		users.add(u);
-		
+		users.put(u.getUserName(), u);
 	}
 	
-	public void removeUser(User u) {
-		Iterator <User> userIterator = users.iterator();
-		while (userIterator.hasNext()) {
-			User u2 = userIterator.next();
-			if (u2.getUserName().equals(u.getUserName())) {
-				users.remove(u2);
-			}
-			
-			
-		}
-	
-		
+	public void removeUser(String u) {
+		users.remove(u);
 	}
 	
 	public User searchUser(String userName) {
-		ArrayList<User> users = getUsers();
-		
-		for (int i = 0; i < users.size(); i++) {
-			if(users.get(i).getName().equals(userName)) {
-				return users.get(i);
-			}
-		}
-		return null;
+		return users.get(userName);
 	}
 	
 	public Room searchRoom(String r) {
@@ -144,5 +129,59 @@ public class SpaceSystem {
 		
 		return null;
 		
+	}
+	
+	public boolean validate(String userName, String password) {
+		
+		try {
+			in = new Scanner(usersFile);
+			String userNameCurrent = "";
+			String passwordCurrent = "";
+			
+			while(in.hasNextLine()) {
+				String columnCurrent;
+				for(int i = 0; i < 3; i++) {
+					columnCurrent = in.next();
+					if(i == 1) {
+						userNameCurrent = columnCurrent;
+					}
+					else if(i == 2) {
+						passwordCurrent = columnCurrent;
+					}
+				}
+				if(userNameCurrent.equals(userName) && passwordCurrent.equals(password)) {
+					if(!usersLoaded) {
+						loadUsers();
+						userLoggedIn = users.get(userName); 
+					}
+					return true;
+				}
+				in.nextLine();
+			}
+			
+		}
+		catch(FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		finally {
+			if(in != null) {
+				in.close();
+			}
+		}
+		return false;
+	}
+	
+	public void loadUsers() throws FileNotFoundException {
+		in = new Scanner(usersFile);
+		while(in.hasNextLine()) {
+			String name = in.next();
+			String username = in.next();
+			String password = in.next();
+			String email = in.next();
+			String permissions = in.next();
+			int requestCountWeek = Integer.parseInt(in.next());
+			users.put(username, new User(name,username,password,email,permissions,requestCountWeek,this));
+		}
+		usersLoaded = true;
 	}
 }
