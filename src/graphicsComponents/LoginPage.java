@@ -26,33 +26,45 @@ public class LoginPage extends JFrame {
 	 */
 	public LoginPage(SpaceSystem system) {
 		this.system = system;
-		this.setSize(400, 400);
+		initialize();
+	}
+	
+	public void initialize() {
+		this.setSize(400, 300);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Login to Space System");
-		this.getContentPane().setLayout(null);
+		this.setLayout(null);
 		
 		userNameField = new JTextField();
 		userNameField.setBounds(117, 71, 161, 20);
-		this.getContentPane().add(userNameField);
+		this.add(userNameField);
 		userNameField.setColumns(10);
 		
 		passwordField = new JTextField();
 		passwordField.setBounds(117, 127, 161, 20);
-		this.getContentPane().add(passwordField);
+		this.add(passwordField);
 		passwordField.setColumns(10);
 		
 		JLabel lblUserName = new JLabel("User Name");
 		lblUserName.setBounds(170, 46, 108, 14);
-		this.getContentPane().add(lblUserName);
+		this.add(lblUserName);
 		
 		JLabel lblPassword = new JLabel("Password");
-		lblPassword.setBounds(170, 102, 46, 14);
-		this.getContentPane().add(lblPassword);
+		lblPassword.setBounds(170, 102, 108, 14);
+		this.add(lblPassword);
 		
 		btnLogin = new JButton("Login");
 		btnLogin.addActionListener(new LoginListener());
 		btnLogin.setBounds(150, 158, 89, 23);
-		this.getContentPane().add(btnLogin);
+		this.add(btnLogin);
+	}
+	
+	public void drawMainFrame(MainFrame window) {
+		this.getContentPane().removeAll();
+		this.revalidate();
+		this.setSize(522, 695);
+		this.add(window);
+		this.repaint();
 	}
 	
 	class LoginListener implements ActionListener {
@@ -64,9 +76,9 @@ public class LoginPage extends JFrame {
 				if(system.validate(userName, password)) {
 					MainFrame window = new MainFrame();
 					window.addSystem(system);
+					window.setUserLabel("Welcome " + system.getUserLoggedIn().getName() + "!");
 					system.addGui(window);
-					window.setVisible(true);
-					LoginPage.this.setVisible(false);
+					LoginPage.this.drawMainFrame(window);
 				}
 				else {
 					JOptionPane.showMessageDialog(LoginPage.this, "Wrong username or password entered");
