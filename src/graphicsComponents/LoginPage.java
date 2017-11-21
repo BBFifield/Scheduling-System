@@ -63,7 +63,7 @@ public class LoginPage extends JFrame {
 	public void drawMainFrame(MainFrame window) {
 		this.getContentPane().removeAll();
 		this.revalidate();
-		this.setSize(522, 695);
+		this.setSize(680, 680);
 		this.add(window);
 		this.repaint();
 	}
