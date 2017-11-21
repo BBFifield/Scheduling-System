@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.awt.event.ActionEvent;
 import javax.swing.JTable;
 import javax.swing.JSpinner;
@@ -19,13 +20,17 @@ import javax.swing.SpinnerNumberModel;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.awt.Font;
 
 
 import main.SpaceSystem;
+import main.UserValidator;
 import schedule.Booking;
-import javax.swing.DefaultListModel;
+import schedule.Room;
 
+import javax.swing.DefaultListModel;
+ 
 public class MainFrame extends JPanel {
 	
 	private JTable calendar;
@@ -144,14 +149,17 @@ public class MainFrame extends JPanel {
 		this.add(lblNewLabel_6);
 		
 		roomCB = new JComboBox();
-		initializeRooms();
 		roomCB.setBounds(92, 279, 132, 20);
 		this.add(roomCB);
 		
 		JButton btnNewButton = new JButton("Submit Request");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
-				submitButtonPressed();
+				try {
+					submitButtonPressed();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 		btnNewButton.setBounds(92, 378, 132, 23);
@@ -201,61 +209,9 @@ public class MainFrame extends JPanel {
 		add(lblBookings);
 	}
 	
-	public void setUserLabel(String userLabel) {
-		this.userLabel.setText(userLabel);
-	}
-	
-	public void submitButtonPressed() {
-		boolean selected = false;
-		String activityName = textField.getText();
-		if(!activityName.isEmpty()) {
-			for(int i = 0; i < calendar.getRowCount(); i++) {
-				if(calendar.isRowSelected(i)) {
-					selected = true;
-				}
-			}
-			
-			if(selected == true) {
-				String roomName = (String) roomCB.getSelectedItem();
-				Date spinnerDate = (Date) timeSpinner.getValue();
-				Calendar date = Calendar.getInstance();
-				date.setTime(spinnerDate);
-				int day = ((int) calendar.getValueAt(calendar.getSelectedRow(), calendar.getSelectedColumn()));
-				int monthIndex = ((Month) monthCB.getSelectedItem()).monthIndex;
-				date.set(Calendar.DAY_OF_MONTH, day);
-				date.set(Calendar.MONTH, monthIndex);
-				int duration = (Integer) durationSpinner.getValue();
-				
-				system.addBooking(new Booking(system.getUserLoggedIn(), system.searchRoom(roomName), duration, date));
-				
-			}
-			else {
-				JOptionPane.showMessageDialog(this, "No date selected in table");
-			}
-		}
-		else {
-			JOptionPane.showMessageDialog(this, "No activity name specified for booking");
-		}
-	
-	}
-	
-	public void removeButtonPressed() {
-		
-	}
-	
-	public void myBookings() {
-		ArrayList<Booking> bookings = system.getBookings().get(system.getUserLoggedIn());
-		for(int i = 0; i < bookings.size(); i++) {
-			((DefaultListModel<String>) bookingsList.getModel()).addElement(bookings.get(i).toString());
-		}
-	}
-	
-	public void bookingsOnSelectedDay() {
-		
-	}
-	
 	public void addSystem(SpaceSystem system) {
 		this.system = system;
+		initializeRooms();
 	}
 	
 	public void initializeCalendar() {
@@ -284,21 +240,73 @@ public class MainFrame extends JPanel {
 	}
 	
 	public void initializeRooms() {
+		Collection<Room> rooms = system.getRooms().values();
+		for(Room r: rooms) {
+			roomCB.addItem(r);
+		}
+	}
+	
+	public void setUserLabel(String userLabel) {
+		this.userLabel.setText(userLabel);
+	}
+	
+	public void submitButtonPressed() throws IOException {
+		boolean selected = false;
+		String activityName = textField.getText();
+		if(!activityName.isEmpty()) {
+			for(int i = 0; i < calendar.getRowCount(); i++) {
+				if(calendar.isRowSelected(i)) {
+					selected = true;
+				}
+			}
+			
+			if(selected == true) {
+				String roomName = ((Room) roomCB.getSelectedItem()).toString();
+				Date spinnerDate = (Date) timeSpinner.getValue();
+				Calendar date = Calendar.getInstance();
+				
+				date.setTime(spinnerDate);
+				int day = ((int) calendar.getValueAt(calendar.getSelectedRow(), calendar.getSelectedColumn()));
+				int monthIndex = ((Month) monthCB.getSelectedItem()).monthIndex;
+				date.set(Calendar.DAY_OF_MONTH, day);
+				date.set(Calendar.MONTH, monthIndex);
+				
+				int duration = (Integer) durationSpinner.getValue();
+				
+				system.addBooking(new Booking(activityName,system.searchUser(UserValidator.userLoggedIn), system.searchRoom(roomName), duration, date));
+				JOptionPane.showMessageDialog(this, "Booking request sent!");
+			} 
+			else {
+				JOptionPane.showMessageDialog(this, "No date selected in table");
+			}
+		}
+		else {
+			JOptionPane.showMessageDialog(this, "No activity name specified for booking");
+		}
+	
+	}
+	
+	public void removeButtonPressed() {
 		
 	}
 	
+	public void myBookings() {
+		ArrayList<Booking> bookings = system.getBookings().get(UserValidator.userLoggedIn);
+		for(int i = 0; i < bookings.size(); i++) {
+			((DefaultListModel<String>) bookingsList.getModel()).addElement(bookings.get(i).toString());
+		}
+	}
+	
+	public void bookingsOnSelectedDay() {
+		
+	}
 	
 	public static void main(String[] args) {
-		SpaceSystem system = new SpaceSystem();
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					LoginPage login = new LoginPage(system);
+					LoginPage login = new LoginPage();
 					login.setVisible(true);
-					MainFrame window = new MainFrame();
-					window.addSystem(system);
-					system.addGui(window);
-					window.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

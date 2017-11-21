@@ -7,19 +7,29 @@ import users.User;
 
 
 public class Booking implements Serializable {
+	private String activityName;
 	private User user;
 	private Room room;
 	private int timeBooked;
 	private Calendar dateBooked;
 	private boolean approved = false;
 	
-	public Booking(User user, Room room, int timeBooked, Calendar dateBooked) {
+	public Booking(String activityName, User user, Room room, int timeBooked, Calendar dateBooked) {
+		this.activityName = activityName;
 		this.user = user;
 		this.room = room;
 		this.timeBooked = timeBooked;
 		this.dateBooked = dateBooked;
 	}
 	
+	public String getActivityName() {
+		return activityName;
+	}
+
+	public void setActivityName(String activityName) {
+		this.activityName = activityName;
+	}
+
 	public User getUser() {
 		return user;
 	}
@@ -61,11 +71,7 @@ public class Booking implements Serializable {
 	}
 	
 	public String toString() {
-		System.out.println(user.getUserName());
-		System.out.println(room.getRoomId());
-		System.out.println(timeBooked);
-		System.out.println(dateBooked.getTime());
-		return user.getUserName() + " " + room.getRoomId() + " " + timeBooked + " " + dateBooked.getTime();
+		return "Activity: " + activityName + "     Room: " + room + "    " + timeBooked + " Hours";
 	}
 }
 

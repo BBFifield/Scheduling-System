@@ -31,4 +31,8 @@ public class Room implements Serializable {
 	public void notBookable(){
 		isBookable = false;
 	}
+	
+	public String toString() {
+		return roomId;
+	}
 }
