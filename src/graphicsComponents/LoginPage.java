@@ -8,8 +8,13 @@ import javax.swing.JButton;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Collection;
 
 import main.SpaceSystem;
+import main.UserValidator;
+import schedule.Room;
 
 public class LoginPage extends JFrame {
 	
@@ -20,13 +25,13 @@ public class LoginPage extends JFrame {
 	/**
 	 * @wbp.parser.entryPoint
 	 */
-	public LoginPage(SpaceSystem system) {
+	public LoginPage() {
 		this.system = system;
 		initialize();
 	}
 	
 	public void initialize() {
-		this.setSize(400, 300);
+		this.setBounds(400,25, 400, 300);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Login to Space System");
 		this.setLayout(null);
@@ -68,16 +73,25 @@ public class LoginPage extends JFrame {
 			if(e.getSource() == btnLogin) {
 				String userName = userNameField.getText();
 				String password = passwordField.getText();
-				System.out.println(userName);
-				if(system.validate(userName, password)) {
-					MainFrame window = new MainFrame();
-					window.addSystem(system);
-					window.setUserLabel("Welcome " + system.getUserLoggedIn().getName() + "!");
-					system.addGui(window);
-					LoginPage.this.drawMainFrame(window);
+				try {
+					if(UserValidator.validate(userName, password)) {
+						system = new SpaceSystem();
+						MainFrame window = new MainFrame();
+						window.addSystem(system);
+						window.setUserLabel("Welcome " + system.searchUser(UserValidator.userLoggedIn).getName() + "!");
+						system.addGui(window);
+						LoginPage.this.drawMainFrame(window);
+					}
+					else {
+						JOptionPane.showMessageDialog(LoginPage.this, "Wrong username or password entered");
+					}
 				}
-				else {
-					JOptionPane.showMessageDialog(LoginPage.this, "Wrong username or password entered");
+				catch(FileNotFoundException e1) {
+					e1.printStackTrace();
+				} catch (ClassNotFoundException e1) {
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					e1.printStackTrace();
 				}
 			}
 		}
