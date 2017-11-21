@@ -71,7 +71,8 @@ public class Booking implements Serializable {
 	}
 	
 	public String toString() {
-		return "Activity: " + activityName + "     Room: " + room + "    " + timeBooked + " Hours";
+		return "Activity: " + activityName + "     Room: " + room 
+				+ "    " + timeBooked + " Hours     " + dateBooked.getTime();
 	}
 }
 

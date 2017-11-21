@@ -80,19 +80,19 @@ public class MainFrame extends JPanel {
 	 */
 	private void initialize() {
 		
-		this.setBounds(0, 0, 535, 665);
+		this.setBounds(0, 0, 668, 554);
 		this.setLayout(null);
 	
 		userLabel = new JLabel("Welcome " + null);
-		userLabel.setBounds(252, 11, 126, 23);
+		userLabel.setBounds(427, 13, 126, 23);
 		this.add(userLabel);
 		
-		JLabel lblNewLabel = new JLabel("Scheduled Bookings");
-		lblNewLabel.setBounds(10, 45, 126, 14);
+		JLabel lblNewLabel = new JLabel("Bookings Calendar");
+		lblNewLabel.setBounds(20, 54, 126, 14);
 		this.add(lblNewLabel);
 		
 		monthCB = new JComboBox(Month.values());
-		monthCB.setBounds(10, 66, 126, 20);
+		monthCB.setBounds(20, 79, 126, 20);
 		monthCB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				initializeCalendar();
@@ -101,55 +101,55 @@ public class MainFrame extends JPanel {
 		this.add(monthCB);
 		
 		calendar = new JTable(7, 7);
-		calendar.setBounds(10, 97, 402, 112);
+		calendar.setBounds(20, 110, 376, 112);
 		initializeCalendar();
 		this.add(calendar);
 		
 		Date date = new Date();
 		timeSpinner = new JSpinner(new SpinnerDateModel(date, null, null, Calendar.HOUR_OF_DAY));
-		timeSpinner.setBounds(92, 310, 132, 20);
+		timeSpinner.setBounds(520, 155, 132, 20);
 		JSpinner.DateEditor de = new JSpinner.DateEditor(timeSpinner, "HH:mm:ss");
 		timeSpinner.setEditor(de);
 		this.add(timeSpinner);
 		
 		durationSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 3, 1));
-		durationSpinner.setBounds(92, 341, 132, 20);
+		durationSpinner.setBounds(520, 186, 132, 20);
 		JSpinner.NumberEditor ne1 = new JSpinner.NumberEditor(durationSpinner);
 		durationSpinner.setEditor(ne1);
 		this.add(durationSpinner);
 		
-		JLabel lblNewLabel_1 = new JLabel("Request or Remove Booking");
+		JLabel lblNewLabel_1 = new JLabel("Request and Remove Bookings");
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblNewLabel_1.setBounds(10, 11, 232, 23);
 		this.add(lblNewLabel_1);
 		
-		JLabel lblNewLabel_3 = new JLabel("Request");
-		lblNewLabel_3.setBounds(128, 220, 77, 14);
+		JLabel lblNewLabel_3 = new JLabel("Request Booking");
+		lblNewLabel_3.setBounds(491, 69, 119, 14);
 		this.add(lblNewLabel_3);
 		
 		JLabel lblNewLabel_4 = new JLabel("Length");
-		lblNewLabel_4.setBounds(10, 344, 46, 14);
+		lblNewLabel_4.setBounds(422, 189, 46, 14);
 		this.add(lblNewLabel_4);
 		
 		JLabel lblNewLabel_5 = new JLabel("Time");
-		lblNewLabel_5.setBounds(10, 313, 46, 14);
+		lblNewLabel_5.setBounds(422, 158, 46, 14);
 		this.add(lblNewLabel_5);
 		
 		textField = new JTextField();
-		textField.setBounds(92, 251, 132, 19);
+		textField.setBounds(520, 94, 132, 19);
 		this.add(textField);
 		textField.setColumns(10);
 		
 		JLabel lblActivityName = new JLabel("Activity Name");
-		lblActivityName.setBounds(10, 254, 97, 14);
+		lblActivityName.setBounds(422, 97, 97, 14);
 		this.add(lblActivityName);
 		
 		JLabel lblNewLabel_6 = new JLabel("Room ");
-		lblNewLabel_6.setBounds(10, 279, 46, 14);
+		lblNewLabel_6.setBounds(422, 127, 46, 14);
 		this.add(lblNewLabel_6);
 		
 		roomCB = new JComboBox();
-		roomCB.setBounds(92, 279, 132, 20);
+		roomCB.setBounds(520, 124, 132, 20);
 		this.add(roomCB);
 		
 		JButton btnNewButton = new JButton("Submit Request");
@@ -162,7 +162,7 @@ public class MainFrame extends JPanel {
 				}
 			}
 		});
-		btnNewButton.setBounds(92, 378, 132, 23);
+		btnNewButton.setBounds(520, 230, 132, 23);
 		this.add(btnNewButton);
 		
 		JButton btnRemoveBooking = new JButton("Remove Booking");
@@ -171,12 +171,8 @@ public class MainFrame extends JPanel {
 				removeButtonPressed();
 			}
 		});
-		btnRemoveBooking.setBounds(260, 309, 222, 23);
+		btnRemoveBooking.setBounds(454, 498, 198, 23);
 		this.add(btnRemoveBooking);
-		
-		JLabel lblActions = new JLabel("Actions");
-		lblActions.setBounds(336, 220, 46, 14);
-		this.add(lblActions);
 		
 		JButton myBookingsButton = new JButton("My Bookings");
 		myBookingsButton.addActionListener(new ActionListener() {
@@ -184,28 +180,33 @@ public class MainFrame extends JPanel {
 				myBookings();
 			}
 		});
-		myBookingsButton.setBounds(261, 279, 221, 23);
+		myBookingsButton.setBounds(233, 498, 198, 23);
 		this.add(myBookingsButton);
 		
 		JButton selectDayBookingsButton = new JButton("Bookings on Selected Day");
 		selectDayBookingsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				bookingsOnSelectedDay();
 			}
 		});
-		selectDayBookingsButton.setBounds(260, 250, 221, 23);
+		selectDayBookingsButton.setBounds(10, 498, 198, 23);
 		this.add(selectDayBookingsButton);
 		
 		JButton btnLogout = new JButton("Logout");
-		btnLogout.setBounds(393, 11, 89, 23);
+		btnLogout.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+		btnLogout.setBounds(563, 13, 89, 23);
 		add(btnLogout);
 		
 		DefaultListModel<String> model = new DefaultListModel<>();
 		bookingsList = new JList<>(model);
-		bookingsList.setBounds(10, 449, 393, 182);
+		bookingsList.setBounds(37, 295, 593, 182);
 		add(bookingsList);
 		
-		JLabel lblBookings = new JLabel("Bookings");
-		lblBookings.setBounds(10, 424, 112, 14);
+		JLabel lblBookings = new JLabel("Bookings List");
+		lblBookings.setBounds(300, 270, 112, 14);
 		add(lblBookings);
 	}
 	
@@ -290,7 +291,13 @@ public class MainFrame extends JPanel {
 		
 	}
 	
+	public void clearBookingsList() {
+		DefaultListModel listModel = (DefaultListModel) bookingsList.getModel();
+		listModel.removeAllElements();
+	}
+	
 	public void myBookings() {
+		clearBookingsList();
 		ArrayList<Booking> bookings = system.getBookings().get(UserValidator.userLoggedIn);
 		for(int i = 0; i < bookings.size(); i++) {
 			((DefaultListModel<String>) bookingsList.getModel()).addElement(bookings.get(i).toString());
@@ -298,7 +305,16 @@ public class MainFrame extends JPanel {
 	}
 	
 	public void bookingsOnSelectedDay() {
-		
+		clearBookingsList();
+		int day = (int) calendar.getValueAt(calendar.getSelectedRow(), calendar.getSelectedColumn());
+		Collection<ArrayList<Booking>> bList = (Collection<ArrayList<Booking>>) system.getBookings().values();
+		for(ArrayList<Booking> a: bList) {
+			for(Booking b: a) {
+				if(day == b.getDate().get(Calendar.DAY_OF_MONTH)) {
+					((DefaultListModel<String>) bookingsList.getModel()).addElement(b.toString());
+				}
+			}
+		}
 	}
 	
 	public static void main(String[] args) {
