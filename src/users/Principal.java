@@ -7,8 +7,8 @@ import users.User;
 
 public class Principal extends User {
 	
-	public Principal(String name, String username, String emailAddress, String permission, int requestCountWeek, SpaceSystem system){
-		super(name, username, emailAddress, permission, requestCountWeek, system);
+	public Principal(String name, String username, String emailAddress, int requestCountWeek, SpaceSystem system){
+		super(name, username, emailAddress, requestCountWeek, system);
 	}
 	
 	public void addUser(User user){
