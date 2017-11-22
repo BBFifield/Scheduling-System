@@ -122,18 +122,7 @@ public class MainFrame extends JFrame {
 		calendar = new JTable(row, column);
 		calendar.setBounds(20, 110, 376, 112);
 		initializeCalendar();
-		DefaultTableColumnModel cModel = new DefaultTableColumnModel();
-		calendar.setColumnModel(cModel);
-		for(int i = 0; i < 7; i++) {
-			calendar.getColumnModel().addColumn(new TableColumn(i));
-		}
-		calendar.setColumnModel(cModel);
-		calendar.getColumnModel().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
-				currentCell = calendar.getSelectedColumn();
-				columnSelectionChanged();
-			}
-		});
+		calendar.setCellSelectionEnabled(true);
 		this.add(calendar);
 
         Date date = new Date();
@@ -396,26 +385,7 @@ public class MainFrame extends JFrame {
 		this.dispose();
 	}
 	
-	public void rowSelectionChanged() {
-		calendar.getColumnModel().getColumn(calendar.getSelectedColumn()).setCellRenderer(new CellRenderer());
-	}
 	
-	public void columnSelectionChanged() {
-		calendar.getColumnModel().getColumn((int) currentCell).setCellRenderer(new CellRenderer());
-		currentCell = calendar.getSelectedColumn();
-		calendar.getColumnModel().getColumn(calendar.getSelectedColumn()).setCellRenderer(new CellRenderer());
-	}
-	
-	class CellRenderer extends DefaultTableCellRenderer {
-		@Override
-		public Component getTableCellRendererComponent(JTable table, Object obj, boolean isSelected, boolean hasFocus, int row, int column) {
-		    Component cell = super.getTableCellRendererComponent(table, obj, isSelected, hasFocus, row, column);
-
-		    if (isSelected)
-		        cell.setBackground(Color.YELLOW);
-		    return cell;
-		}
-	}
 	
 	
 	public static void main(String[] args) {
