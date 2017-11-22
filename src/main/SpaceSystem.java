@@ -134,12 +134,14 @@ public class SpaceSystem implements Serializable {
 		ObjectOutputStream oos;
 		
 		try {
-			//HashMap<String,User> map = new HashMap<>();
-			//fos = new FileOutputStream(usersFile);
-			//oos = new ObjectOutputStream(fos);
-			//User u = new User("Brandon", "n", "1", "blah@gmail.com", "req", 0, this);
-			//map.put(u.getUserName(),u);
-			//oos.writeObject(map);
+			/**
+			HashMap<String,User> map = new HashMap<>();
+			fos = new FileOutputStream(usersFile);
+			oos = new ObjectOutputStream(fos);
+			User u = new User("Brandon", "n", "1", "blah@gmail.com", 1, 0, this);
+			map.put(u.getUserName(),u);
+			oos.writeObject(map);
+			**/
 
 			fis = new FileInputStream(usersFile);
 			ois = new ObjectInputStream(fis);
@@ -151,12 +153,14 @@ public class SpaceSystem implements Serializable {
 		}
 
 		try {
-			//HashMap<String,Room> map = new HashMap<>();
-			//fos = new FileOutputStream(roomsFile);
-			//oos = new ObjectOutputStream(fos);
-			//Room room = new Room("ARTS1000", 3.5);
-			//map.put(room.getRoomId(),room);
-			//oos.writeObject(map);
+			/**
+			HashMap<String,Room> map = new HashMap<>();
+			fos = new FileOutputStream(roomsFile);
+			oos = new ObjectOutputStream(fos);
+			Room room = new Room("ARTS1000", 3.5);
+			map.put(room.getRoomId(),room);
+			oos.writeObject(map);
+			**/
 			
 			fis = new FileInputStream(roomsFile);
 			ois = new ObjectInputStream(fis);

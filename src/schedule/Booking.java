@@ -1,6 +1,7 @@
 package schedule;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import users.User;
@@ -12,14 +13,31 @@ public class Booking implements Serializable {
 	private Room room;
 	private int timeBooked;
 	private Calendar dateBooked;
+	private String semester;
+	private int status;
 	private boolean approved = false;
 	
-	public Booking(String activityName, User user, Room room, int timeBooked, Calendar dateBooked) {
+	public static final int singleDay = 0;
+	public static final int eachWeek = 1;
+	public static final int entireSemester = 2;
+	
+	public Booking(String activityName, User user, Room room, int timeBooked, int status, Calendar dateBooked) {
+		this.activityName = activityName;
+		this.user = user;
+		this.room = room;
+		this.timeBooked = timeBooked;
+		this.status = status;
+		this.dateBooked = dateBooked;
+	}
+	
+	public Booking(String activityName, User user, Room room, int timeBooked, Calendar dateBooked, String semester) {
 		this.activityName = activityName;
 		this.user = user;
 		this.room = room;
 		this.timeBooked = timeBooked;
 		this.dateBooked = dateBooked;
+		this.setSemester(semester);
+		this.status = entireSemester;
 	}
 	
 	public String getActivityName() {
@@ -70,10 +88,35 @@ public class Booking implements Serializable {
 		approved = true;
 	}
 	
-	public String toString() {
-		return "Activity: " + activityName + "     Room: " + room 
-				+ "    " + timeBooked + " Hours     " + dateBooked.getTime() 
-				+ "     Approved: " + approved;
+	public String getSemester() {
+		return semester;
 	}
+
+	public void setSemester(String semester) {
+		this.semester = semester;
+	}
+	
+	public String toString() {
+		if(status == singleDay) {
+			return "Activity: " + activityName + "     Room: " + room 
+				+ "    " + timeBooked + " Hours     " + dateBooked.getTime() + "     Single Day" +
+				"     Approved: " + approved;
+		}
+		else if(status == eachWeek) {
+			SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM d, ''yy, hh:mm: a");
+			
+			return "Activity: " + activityName + "     Room: " + room 
+					+ "     " + timeBooked + " Hours     " + "Start Date: " + sdf.format(dateBooked.getTime()) + "     Weekly" +  
+					"     Approved: " + approved;
+			}
+		else {
+			SimpleDateFormat sdf = new SimpleDateFormat("EEE, hh:mm aaa");
+			return "Activity: " + activityName + "     Room: " + room 
+				+ "    " + timeBooked + " Hours     " + sdf.format(dateBooked.getTime()) + "     Entire " + semester +    
+				"     Approved: " + approved;
+			
+		}
+	}
+
 }
 
