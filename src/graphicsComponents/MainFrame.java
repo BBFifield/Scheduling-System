@@ -1,10 +1,13 @@
 package graphicsComponents;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.EventQueue;
 
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JLabel;
@@ -16,8 +19,17 @@ import javax.swing.JTable;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableColumnModelListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -42,6 +54,7 @@ public class MainFrame extends JFrame {
 	private SpaceSystem system;
 	private JLabel userLabel;
 	private JList<Booking> bookingsList;
+	private Object currentCell;
 
 	public enum Month{
 		JANUARY(0, 31, 0), 
@@ -79,9 +92,11 @@ public class MainFrame extends JFrame {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		
+		  JPanel panel = new JPanel();
+
 		this.setBounds(400, 50, 680, 580);
 		this.setLayout(null);
+	
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Space System");
 	
@@ -102,12 +117,26 @@ public class MainFrame extends JFrame {
 		});
 		this.add(monthCB);
 		
-		calendar = new JTable(7, 7);
+		int row = 7;	
+		int column = 7;
+		calendar = new JTable(row, column);
 		calendar.setBounds(20, 110, 376, 112);
 		initializeCalendar();
+		DefaultTableColumnModel cModel = new DefaultTableColumnModel();
+		calendar.setColumnModel(cModel);
+		for(int i = 0; i < 7; i++) {
+			calendar.getColumnModel().addColumn(new TableColumn(i));
+		}
+		calendar.setColumnModel(cModel);
+		calendar.getColumnModel().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				currentCell = calendar.getSelectedColumn();
+				columnSelectionChanged();
+			}
+		});
 		this.add(calendar);
-		
-		Date date = new Date();
+
+        Date date = new Date();
 		timeSpinner = new JSpinner(new SpinnerDateModel(date, null, null, Calendar.HOUR_OF_DAY));
 		timeSpinner.setBounds(520, 155, 132, 20);
 		JSpinner.DateEditor de = new JSpinner.DateEditor(timeSpinner, "HH:mm:ss");
@@ -215,6 +244,10 @@ public class MainFrame extends JFrame {
 		JLabel lblBookings = new JLabel("Bookings List");
 		lblBookings.setBounds(300, 270, 112, 14);
 		add(lblBookings);
+		
+		JTableHeader header = calendar.getTableHeader();
+		  header.setBackground(Color.RED);
+		 this.add(header);
 	}
 	
 	public void addSystem(SpaceSystem system) {
@@ -223,16 +256,18 @@ public class MainFrame extends JFrame {
 	}
 	
 	public void initializeCalendar() {
+		JTableHeader header = calendar.getTableHeader();
 		String[] dayOfWeek = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 		for(int i = 0; i < calendar.getColumnCount(); i++) {
 			calendar.setValueAt(dayOfWeek[i], 0, i);
 		}
-		
 		Month selected = (Month) monthCB.getSelectedItem();
 		int dayCount = 0;
 		for(int i = 1; i < 7; i++) {
 			for(int j = 0; j < 7 && dayCount < selected.days; j++) {
+				
 				if(j < selected.indexStartDay && i == 1) {
+				    
 					calendar.setValueAt(null, 1, j);
 				}
 				else if(i == 1) {
@@ -245,7 +280,9 @@ public class MainFrame extends JFrame {
 				}
 			}
 		}
+		
 	}
+	
 	
 	public void initializeRooms() {
 		Collection<Room> rooms = system.getRooms().values();
@@ -331,6 +368,7 @@ public class MainFrame extends JFrame {
 			if(calendar.isColumnSelected(i)) {
 				selected = true;
 			}
+			
 		}
 			
 		if(selected == true) {
@@ -341,6 +379,7 @@ public class MainFrame extends JFrame {
 					for(Booking b: a) {
 						if(day == b.getDate().get(Calendar.DAY_OF_MONTH)) {
 							((DefaultListModel<Booking>) bookingsList.getModel()).addElement(b);
+						
 						}
 					}
 				}
@@ -357,6 +396,28 @@ public class MainFrame extends JFrame {
 		this.dispose();
 	}
 	
+	public void rowSelectionChanged() {
+		calendar.getColumnModel().getColumn(calendar.getSelectedColumn()).setCellRenderer(new CellRenderer());
+	}
+	
+	public void columnSelectionChanged() {
+		calendar.getColumnModel().getColumn((int) currentCell).setCellRenderer(new CellRenderer());
+		currentCell = calendar.getSelectedColumn();
+		calendar.getColumnModel().getColumn(calendar.getSelectedColumn()).setCellRenderer(new CellRenderer());
+	}
+	
+	class CellRenderer extends DefaultTableCellRenderer {
+		@Override
+		public Component getTableCellRendererComponent(JTable table, Object obj, boolean isSelected, boolean hasFocus, int row, int column) {
+		    Component cell = super.getTableCellRendererComponent(table, obj, isSelected, hasFocus, row, column);
+
+		    if (isSelected)
+		        cell.setBackground(Color.YELLOW);
+		    return cell;
+		}
+	}
+	
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -369,4 +430,8 @@ public class MainFrame extends JFrame {
 			}
 		});
 	}
+	
+	
+	
+	
 }
