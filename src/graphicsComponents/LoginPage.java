@@ -31,7 +31,7 @@ public class LoginPage extends JFrame {
 	}
 	
 	public void initialize() {
-		this.setBounds(400,25, 400, 300);
+		this.setBounds(450,100, 400, 300);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Login to Space System");
 		this.setLayout(null);
@@ -60,14 +60,6 @@ public class LoginPage extends JFrame {
 		this.add(btnLogin);
 	}
 	
-	public void drawMainFrame(MainFrame window) {
-		this.getContentPane().removeAll();
-		this.revalidate();
-		this.setSize(680, 680);
-		this.add(window);
-		this.repaint();
-	}
-	
 	class LoginListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if(e.getSource() == btnLogin) {
@@ -80,7 +72,8 @@ public class LoginPage extends JFrame {
 						window.addSystem(system);
 						window.setUserLabel("Welcome " + system.searchUser(UserValidator.userLoggedIn).getName() + "!");
 						system.addGui(window);
-						LoginPage.this.drawMainFrame(window);
+						window.setVisible(true);
+						LoginPage.this.dispose();
 					}
 					else {
 						JOptionPane.showMessageDialog(LoginPage.this, "Wrong username or password entered");

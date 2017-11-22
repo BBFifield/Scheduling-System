@@ -22,16 +22,12 @@ public class UserValidator {
 			passwordCurrent = in.next();
 			if(userNameCurrent.equals(username) && passwordCurrent.equals(password)) {
 				userLoggedIn = username; 
+				in.close();
 				return true;
 			}
 		}
 		
-	
-	
-		if(in != null) {
-			in.close();
-		}
-		
+		in.close();
 		return false;
 	}
 }

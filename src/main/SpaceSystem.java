@@ -72,50 +72,35 @@ public class SpaceSystem implements Serializable {
 			bookings.put(b.getUser().getUserName(), new ArrayList<Booking>());
 		}
 		getUserBookings(b.getUser()).add(b);
-		
-		FileOutputStream fos = new FileOutputStream(bookingsFile);
-		ObjectOutputStream oos = new ObjectOutputStream(fos);
-		
-		oos.writeObject(bookings);
-		
-		fos.close();
-		oos.close();
+		updateFile(bookingsFile, bookings);
 
 	}
 
-	public void removeBooking(Booking b) {
+	public void removeBooking(Booking b) throws IOException {
 		getUserBookings(b.getUser()).remove(b);
+		updateFile(bookingsFile, bookings);
 	}
 
 	public void addRoom(Room r) throws IOException {
 		rooms.put(r.getRoomId(), r);
-		
-		FileOutputStream fos = new FileOutputStream(roomsFile);
-		ObjectOutputStream oos = new ObjectOutputStream(fos);
-		
-		oos.writeObject(rooms);
-		
-		fos.close();
-		oos.close();
+		updateFile(roomsFile, rooms);
 	}
 
-	public void removeRoom(Room r) {
+	public void removeRoom(Room r) throws IOException {
 		rooms.remove(r);
+		updateFile(roomsFile, rooms);
 	}
 
 	public void addUser(User u) throws IOException {
 		users.put(u.getUserName(), u);
-		FileOutputStream fos = new FileOutputStream(usersFile);
-		ObjectOutputStream oos = new ObjectOutputStream(fos);
-		
-		oos.writeObject(users);
-		
-		fos.close();
-		oos.close();
+		updateFile(usersFile, users);
 	}
 
-	public void removeUser(String u) {
+	public void removeUser(String u) throws IOException {
 		users.remove(u);
+		bookings.remove(u);
+		updateFile(usersFile, users);
+		updateFile(bookingsFile, bookings);
 	}
 
 	public User searchUser(String userName) {
@@ -128,6 +113,16 @@ public class SpaceSystem implements Serializable {
 
 	public ArrayList<Booking> getUserBookings(User u) {
 		return bookings.get(u.getUserName());
+	} 
+	
+	public void updateFile(File f, HashMap m) throws IOException {
+		FileOutputStream fos = new FileOutputStream(f);
+		ObjectOutputStream oos = new ObjectOutputStream(fos);
+		
+		oos.writeObject(m);
+		
+		fos.close();
+		oos.close();
 	}
 
 	public void loadResources() throws ClassNotFoundException, IOException {
@@ -139,9 +134,12 @@ public class SpaceSystem implements Serializable {
 		ObjectOutputStream oos;
 		
 		try {
+			//HashMap<String,User> map = new HashMap<>();
 			//fos = new FileOutputStream(usersFile);
 			//oos = new ObjectOutputStream(fos);
-			//oos.writeObject(new User("Brandon", "n", "1", "blah@gmail.com", "req", 0, this));
+			//User u = new User("Brandon", "n", "1", "blah@gmail.com", "req", 0, this);
+			//map.put(u.getUserName(),u);
+			//oos.writeObject(map);
 
 			fis = new FileInputStream(usersFile);
 			ois = new ObjectInputStream(fis);
