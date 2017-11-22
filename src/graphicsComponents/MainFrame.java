@@ -2,7 +2,7 @@ package graphicsComponents;
 import java.awt.EventQueue;
 
 import javax.swing.JComboBox;
-
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JList;
@@ -31,7 +31,7 @@ import schedule.Room;
 
 import javax.swing.DefaultListModel;
  
-public class MainFrame extends JPanel {
+public class MainFrame extends JFrame {
 	
 	private JTable calendar;
 	private JComboBox monthCB;
@@ -41,7 +41,7 @@ public class MainFrame extends JPanel {
 	private JTextField textField;
 	private SpaceSystem system;
 	private JLabel userLabel;
-	private JList<String> bookingsList;
+	private JList<Booking> bookingsList;
 
 	public enum Month{
 		JANUARY(0, 31, 0), 
@@ -80,8 +80,10 @@ public class MainFrame extends JPanel {
 	 */
 	private void initialize() {
 		
-		this.setBounds(0, 0, 668, 554);
+		this.setBounds(400, 50, 680, 580);
 		this.setLayout(null);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setTitle("Space System");
 	
 		userLabel = new JLabel("Welcome " + null);
 		userLabel.setBounds(427, 13, 126, 23);
@@ -168,7 +170,11 @@ public class MainFrame extends JPanel {
 		JButton btnRemoveBooking = new JButton("Remove Booking");
 		btnRemoveBooking.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
-				removeButtonPressed();
+				try {
+					removeButtonPressed();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 		btnRemoveBooking.setBounds(454, 498, 198, 23);
@@ -195,12 +201,13 @@ public class MainFrame extends JPanel {
 		JButton btnLogout = new JButton("Logout");
 		btnLogout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				logout();
 			}
 		});
 		btnLogout.setBounds(563, 13, 89, 23);
 		add(btnLogout);
 		
-		DefaultListModel<String> model = new DefaultListModel<>();
+		DefaultListModel<Booking> model = new DefaultListModel<>();
 		bookingsList = new JList<>(model);
 		bookingsList.setBounds(37, 295, 593, 182);
 		add(bookingsList);
@@ -287,8 +294,15 @@ public class MainFrame extends JPanel {
 	
 	}
 	
-	public void removeButtonPressed() {
-		
+	public void removeButtonPressed() throws IOException {
+		if(bookingsList.isSelectionEmpty()) {
+			JOptionPane.showMessageDialog(this, "You must select a booking first in the list above to remove");
+		}
+		else {
+			DefaultListModel listModel = (DefaultListModel) bookingsList.getModel();
+			system.removeBooking(bookingsList.getSelectedValue());
+			listModel.removeElement(bookingsList.getSelectedValue());
+		}
 	}
 	
 	public void clearBookingsList() {
@@ -299,22 +313,48 @@ public class MainFrame extends JPanel {
 	public void myBookings() {
 		clearBookingsList();
 		ArrayList<Booking> bookings = system.getBookings().get(UserValidator.userLoggedIn);
-		for(int i = 0; i < bookings.size(); i++) {
-			((DefaultListModel<String>) bookingsList.getModel()).addElement(bookings.get(i).toString());
+		if(bookings != null) {
+			for(int i = 0; i < bookings.size(); i++) {
+				((DefaultListModel<Booking>) bookingsList.getModel()).addElement(bookings.get(i));
+			}
 		}
-	}
+		else {
+			JOptionPane.showMessageDialog(this, "You have no bookings requested or approved to be shown");
+		}
+	} 
 	
 	public void bookingsOnSelectedDay() {
 		clearBookingsList();
-		int day = (int) calendar.getValueAt(calendar.getSelectedRow(), calendar.getSelectedColumn());
-		Collection<ArrayList<Booking>> bList = (Collection<ArrayList<Booking>>) system.getBookings().values();
-		for(ArrayList<Booking> a: bList) {
-			for(Booking b: a) {
-				if(day == b.getDate().get(Calendar.DAY_OF_MONTH)) {
-					((DefaultListModel<String>) bookingsList.getModel()).addElement(b.toString());
+	
+		boolean selected = false;
+		for(int i = 0; i < calendar.getColumnCount(); i++) {
+			if(calendar.isColumnSelected(i)) {
+				selected = true;
+			}
+		}
+			
+		if(selected == true) {
+			int day = (int) calendar.getValueAt(calendar.getSelectedRow(), calendar.getSelectedColumn());
+			Collection<ArrayList<Booking>> bList = (Collection<ArrayList<Booking>>) system.getBookings().values();
+			if(bList != null) {
+				for(ArrayList<Booking> a: bList) {
+					for(Booking b: a) {
+						if(day == b.getDate().get(Calendar.DAY_OF_MONTH)) {
+							((DefaultListModel<Booking>) bookingsList.getModel()).addElement(b);
+						}
+					}
 				}
 			}
 		}
+		else {
+			JOptionPane.showMessageDialog(this, "You must select a calendar day to see any bookings for a day");
+		}
+	}
+	
+	public void logout() {
+		LoginPage login = new LoginPage();
+		login.setVisible(true);
+		this.dispose();
 	}
 	
 	public static void main(String[] args) {
@@ -324,7 +364,7 @@ public class MainFrame extends JPanel {
 					LoginPage login = new LoginPage();
 					login.setVisible(true);
 				} catch (Exception e) {
-					e.printStackTrace();
+					e.printStackTrace(); 
 				}
 			}
 		});
