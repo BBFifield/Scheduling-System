@@ -1,10 +1,11 @@
 package users;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 import main.SpaceSystem;
 import schedule.Booking;
-
+import schedule.Room;
 import main.SpaceSystem;
 import schedule.Booking;
 
@@ -14,11 +15,14 @@ public class User implements Serializable {
 	private String userName;
 	private String password;
 	private String emailAddress;
-	private String permissions;
+	private int permissions;
 	private int requestCountWeek; 
 	private SpaceSystem system;
 	
-	public User(String name, String userName, String password, String emailAddress, String permissions, int requestCountWeek, SpaceSystem system) {
+	public static final int regularPermissions = 0;
+	public static final int adminPermissions = 1;
+	
+	public User(String name, String userName, String password, String emailAddress, int permissions, int requestCountWeek, SpaceSystem system) {
 		this.name = name;
 		this.userName = userName;
 		this.password = password;
@@ -44,6 +48,23 @@ public class User implements Serializable {
 		
 	}
 	
+	public void addUser(User user) throws IOException{
+		if(permissions == adminPermissions) {
+			getSystem().addUser(user);
+		}
+	}
+	
+	public void addRoom (Room room) throws IOException{
+		if(permissions == adminPermissions) {
+			getSystem().addRoom(room);
+		}
+	}
+	
+	public void approveBooking(Booking booking) throws IOException{
+		if(permissions == adminPermissions) {
+			getSystem().addBooking(booking);
+		}
+	} 
 
 	public String getName() {
 		return name;
@@ -69,11 +90,11 @@ public class User implements Serializable {
 		this.emailAddress = emailAddress;
 	}
 
-	public String getPermissions() {
+	public int getPermissions() {
 		return permissions;
 	}
 
-	public void setPermissions(String permissions) {
+	public void setPermissions(int permissions) {
 		this.permissions = permissions;
 	}
 

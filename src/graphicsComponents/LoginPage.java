@@ -68,8 +68,7 @@ public class LoginPage extends JFrame {
 				try {
 					if(UserValidator.validate(userName, password)) {
 						system = new SpaceSystem();
-						MainFrame window = new MainFrame();
-						window.addSystem(system);
+						MainFrame window = new MainFrame(system);
 						window.setUserLabel("Welcome " + system.searchUser(UserValidator.userLoggedIn).getName() + "!");
 						system.addGui(window);
 						window.setVisible(true);

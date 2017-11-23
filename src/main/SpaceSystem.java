@@ -1,15 +1,19 @@
 package main;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
 
 import graphicsComponents.MainFrame;
@@ -28,7 +32,7 @@ public class SpaceSystem implements Serializable {
 	private File usersFile = new File("resources/users.txt");
 	private File roomsFile = new File("resources/rooms.txt");
 	private File bookingsFile = new File("resources/bookings.txt");
-
+	private File loginInfo = new File("resources/loginInfo.txt");
 	
 
 	public SpaceSystem() throws ClassNotFoundException, IOException {
@@ -93,6 +97,7 @@ public class SpaceSystem implements Serializable {
 
 	public void addUser(User u) throws IOException {
 		users.put(u.getUserName(), u);
+		updateLoginInfoFile();
 		updateFile(usersFile, users);
 	}
 
@@ -124,6 +129,16 @@ public class SpaceSystem implements Serializable {
 		fos.close();
 		oos.close();
 	}
+	
+	public void updateLoginInfoFile() throws IOException {
+		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(loginInfo)));
+		Collection<User> usersList = users.values();
+		for(User u: usersList) {
+			out.write(u.getUserName() + " " + u.getPassword());
+			out.println();
+		}
+		out.flush();
+	}
 
 	public void loadResources() throws ClassNotFoundException, IOException {
 		
@@ -134,12 +149,14 @@ public class SpaceSystem implements Serializable {
 		ObjectOutputStream oos;
 		
 		try {
-			//HashMap<String,User> map = new HashMap<>();
-			//fos = new FileOutputStream(usersFile);
-			//oos = new ObjectOutputStream(fos);
-			//User u = new User("Brandon", "n", "1", "blah@gmail.com", "req", 0, this);
-			//map.put(u.getUserName(),u);
-			//oos.writeObject(map);
+			/*
+			HashMap<String,User> map = new HashMap<>();
+			fos = new FileOutputStream(usersFile);
+			oos = new ObjectOutputStream(fos);
+			User u = new User("Principal", "a", "1", "blah@gmail.com", 1, 0, this);
+			map.put(u.getUserName(),u);
+			oos.writeObject(map);
+			*/
 
 			fis = new FileInputStream(usersFile);
 			ois = new ObjectInputStream(fis);
@@ -151,12 +168,14 @@ public class SpaceSystem implements Serializable {
 		}
 
 		try {
-			//HashMap<String,Room> map = new HashMap<>();
-			//fos = new FileOutputStream(roomsFile);
-			//oos = new ObjectOutputStream(fos);
-			//Room room = new Room("ARTS1000", 3.5);
-			//map.put(room.getRoomId(),room);
-			//oos.writeObject(map);
+			/*
+			HashMap<String,Room> map = new HashMap<>();
+			fos = new FileOutputStream(roomsFile);
+			oos = new ObjectOutputStream(fos);
+			Room room = new Room("ARTS1000", 3.5);
+			map.put(room.getRoomId(),room);
+			oos.writeObject(map);
+			*/
 			
 			fis = new FileInputStream(roomsFile);
 			ois = new ObjectInputStream(fis);
