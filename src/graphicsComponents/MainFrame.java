@@ -572,6 +572,10 @@ public class MainFrame extends JFrame {
 			JOptionPane.showMessageDialog(this, "All fields must be entered to add a user");
 		}
 	}
+	
+	public void removeUser() {
+		
+	}
 
 	
 	public static void main(String[] args) {
