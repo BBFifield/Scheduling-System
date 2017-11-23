@@ -28,6 +28,7 @@ import main.SpaceSystem;
 import main.UserValidator;
 import schedule.Booking;
 import schedule.Room;
+import users.User;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JRadioButton;
@@ -42,13 +43,30 @@ public class MainFrame extends JFrame {
 	private JSpinner timeSpinner;
 	private JSpinner durationSpinner;
 	private JComboBox roomCB;
-	private JTextField textField;
+	private JTextField activityTextField;
 	private SpaceSystem system;
 	private JLabel userLabel;
+	private JButton btnLogout;
 	private JList<Booking> bookingsList;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private JRadioButton singleDayRB;
 	private JRadioButton weekRB;
+	private JTextField nameTextField;
+	private JLabel lblRequestBooking;
+	private JLabel lblActivityName;
+	private JLabel lblRoom;
+	private JLabel lblTime;
+	private JLabel lblLength;
+	private JButton btnRequest;
+	private JLabel lblUsername;
+	private JTextField usernameTextField;
+	private JTextField passwordTextField;
+	private JLabel lblPassword;
+	private JLabel lblEmail;
+	private JTextField emailTextField;
+	private JButton btnAddUser;
+	private JLabel lblUserList;
+	private JTextField roomNameTextField;
 
 	public enum Month{
 		JANUARY(0, 31, 0, 1), 
@@ -80,8 +98,13 @@ public class MainFrame extends JFrame {
 	/**
 	 * Create the application.
 	 */
-	public MainFrame() {
+	public MainFrame(SpaceSystem system) {
+		this.system = system;
 		initialize();
+		if(system.searchUser(UserValidator.userLoggedIn).getPermissions() == User.adminPermissions) {
+			initializeAdminGui();
+		}
+		initializeRooms();
 	}
 
 	/**
@@ -89,7 +112,7 @@ public class MainFrame extends JFrame {
 	 */
 	private void initialize() {
 		
-		this.setBounds(400, 50, 900, 580);
+		this.setBounds(400, 50, 900, 600);
 		getContentPane().setLayout(null);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Space System");
@@ -113,6 +136,7 @@ public class MainFrame extends JFrame {
 		
 		calendar = new JTable(7, 7);
 		calendar.setBounds(20, 110, 376, 112);
+		calendar.setCellSelectionEnabled(true);
 		initializeCalendar();
 		getContentPane().add(calendar);
 		
@@ -134,37 +158,37 @@ public class MainFrame extends JFrame {
 		lblNewLabel_1.setBounds(10, 11, 232, 23);
 		getContentPane().add(lblNewLabel_1);
 		
-		JLabel lblNewLabel_3 = new JLabel("Request Booking");
-		lblNewLabel_3.setBounds(625, 69, 119, 14);
-		getContentPane().add(lblNewLabel_3);
+		lblRequestBooking = new JLabel("Request Booking");
+		lblRequestBooking.setBounds(625, 69, 119, 14);
+		getContentPane().add(lblRequestBooking);
 		
-		JLabel lblNewLabel_4 = new JLabel("Length");
-		lblNewLabel_4.setBounds(555, 189, 46, 14);
-		getContentPane().add(lblNewLabel_4);
+		lblLength = new JLabel("Length");
+		lblLength.setBounds(555, 189, 46, 14);
+		getContentPane().add(lblLength);
 		
-		JLabel lblNewLabel_5 = new JLabel("Time");
-		lblNewLabel_5.setBounds(555, 158, 46, 14);
-		getContentPane().add(lblNewLabel_5);
+		lblTime = new JLabel("Time");
+		lblTime.setBounds(555, 158, 46, 14);
+		getContentPane().add(lblTime);
 		
-		textField = new JTextField();
-		textField.setBounds(690, 94, 132, 19);
-		getContentPane().add(textField);
-		textField.setColumns(10);
+		activityTextField = new JTextField();
+		activityTextField.setBounds(690, 94, 132, 19);
+		getContentPane().add(activityTextField);
+		activityTextField.setColumns(10);
 		
-		JLabel lblActivityName = new JLabel("Activity Name");
+		lblActivityName = new JLabel("Activity Name");
 		lblActivityName.setBounds(555, 97, 97, 14);
 		getContentPane().add(lblActivityName);
 		
-		JLabel lblNewLabel_6 = new JLabel("Room ");
-		lblNewLabel_6.setBounds(555, 130, 46, 14);
-		getContentPane().add(lblNewLabel_6);
+		lblRoom = new JLabel("Room ");
+		lblRoom.setBounds(555, 130, 46, 14);
+		getContentPane().add(lblRoom);
 		
 		roomCB = new JComboBox();
 		roomCB.setBounds(690, 124, 132, 20);
 		getContentPane().add(roomCB);
 		
-		JButton btnNewButton = new JButton("Submit Request");
-		btnNewButton.addActionListener(new ActionListener() {
+		btnRequest = new JButton("Submit Request");
+		btnRequest.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				try {
 					submitButtonPressed();
@@ -173,8 +197,8 @@ public class MainFrame extends JFrame {
 				}
 			}
 		});
-		btnNewButton.setBounds(690, 230, 132, 23);
-		getContentPane().add(btnNewButton);
+		btnRequest.setBounds(690, 230, 132, 23);
+		getContentPane().add(btnRequest);
 		
 		JButton btnRemoveBooking = new JButton("Remove Booking");
 		btnRemoveBooking.addActionListener(new ActionListener() {
@@ -186,7 +210,7 @@ public class MainFrame extends JFrame {
 				}
 			}
 		});
-		btnRemoveBooking.setBounds(454, 498, 198, 23);
+		btnRemoveBooking.setBounds(549, 498, 167, 23);
 		getContentPane().add(btnRemoveBooking);
 		
 		JButton myBookingsButton = new JButton("My Bookings");
@@ -195,7 +219,7 @@ public class MainFrame extends JFrame {
 				myBookings();
 			}
 		});
-		myBookingsButton.setBounds(233, 498, 198, 23);
+		myBookingsButton.setBounds(364, 498, 167, 23);
 		getContentPane().add(myBookingsButton);
 		
 		JButton selectDayBookingsButton = new JButton("Bookings on Selected Day");
@@ -204,10 +228,10 @@ public class MainFrame extends JFrame {
 				bookingsOnSelectedDay();
 			}
 		});
-		selectDayBookingsButton.setBounds(10, 498, 198, 23);
+		selectDayBookingsButton.setBounds(170, 498, 167, 23);
 		getContentPane().add(selectDayBookingsButton);
 		
-		JButton btnLogout = new JButton("Logout");
+		btnLogout = new JButton("Logout");
 		btnLogout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				logout();
@@ -218,7 +242,7 @@ public class MainFrame extends JFrame {
 		
 		DefaultListModel<Booking> model = new DefaultListModel<>();
 		bookingsList = new JList<>(model);
-		bookingsList.setBounds(155, 295, 667, 182);
+		bookingsList.setBounds(155, 295, 603, 182);
 		getContentPane().add(bookingsList);
 		
 		JLabel lblBookings = new JLabel("Bookings List");
@@ -258,11 +282,113 @@ public class MainFrame extends JFrame {
 		JLabel lblSemester = new JLabel("Semester");
 		lblSemester.setBounds(193, 54, 97, 14);
 		getContentPane().add(lblSemester);
+	
 	}
 	
-	public void addSystem(SpaceSystem system) {
-		this.system = system;
-		initializeRooms();
+	public void initializeAdminGui() {
+		this.setBounds(0,0,1300,600);
+		userLabel.setBounds(1000, 13, 126, 23);
+		btnLogout.setBounds(1150, 13, 89, 23);
+		lblRequestBooking.setBounds(541, 69, 119, 14);
+		lblActivityName.setBounds(454, 97, 97, 14);
+		activityTextField.setBounds(560, 94, 132, 19);
+		lblRoom.setBounds(454, 130, 46, 14);
+		roomCB.setBounds(560, 124, 132, 20);
+		lblTime.setBounds(454, 158, 46, 14);
+		timeSpinner.setBounds(560, 155, 132, 20);
+		lblLength.setBounds(454, 189, 46, 14);
+		durationSpinner.setBounds(560, 186, 132, 20);
+		btnRequest.setBounds(560, 230, 132, 23);
+		
+		JLabel lblAddUser = new JLabel("Add User");
+		lblAddUser.setBounds(824, 69, 79, 14);
+		getContentPane().add(lblAddUser);
+		
+		JLabel lblAddRoom = new JLabel("Add Room");
+		lblAddRoom.setBounds(1079, 69, 97, 14);
+		getContentPane().add(lblAddRoom);
+		
+		nameTextField = new JTextField();
+		nameTextField.setBounds(858, 94, 86, 20);
+		getContentPane().add(nameTextField);
+		nameTextField.setColumns(10);
+		
+		JLabel lblName = new JLabel("Name");
+		lblName.setBounds(792, 97, 46, 14);
+		getContentPane().add(lblName);
+		
+		JButton btnApprove = new JButton("Approve Request");
+		btnApprove.setBounds(591, 498, 167, 23);
+		getContentPane().add(btnApprove);
+		
+		lblUsername = new JLabel("Username");
+		lblUsername.setBounds(792, 130, 67, 14);
+		getContentPane().add(lblUsername);
+		
+		usernameTextField = new JTextField();
+		usernameTextField.setBounds(858, 127, 86, 20);
+		getContentPane().add(usernameTextField);
+		usernameTextField.setColumns(10);
+		
+		passwordTextField = new JTextField();
+		passwordTextField.setBounds(858, 155, 86, 20);
+		getContentPane().add(passwordTextField);
+		passwordTextField.setColumns(10);
+		
+		lblPassword = new JLabel("Password");
+		lblPassword.setBounds(792, 158, 46, 14);
+		getContentPane().add(lblPassword);
+		
+		lblEmail = new JLabel("Email");
+		lblEmail.setBounds(792, 189, 46, 14);
+		getContentPane().add(lblEmail);
+		
+		emailTextField = new JTextField();
+		emailTextField.setBounds(858, 186, 86, 20);
+		getContentPane().add(emailTextField);
+		emailTextField.setColumns(10);
+		
+		btnAddUser = new JButton("Add User");
+		btnAddUser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					addUser();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		btnAddUser.setBounds(855, 230, 89, 23);
+		getContentPane().add(btnAddUser);
+		
+		lblUserList = new JLabel("Users List");
+		lblUserList.setBounds(876, 270, 79, 14);
+		getContentPane().add(lblUserList);
+		
+		JList usersList = new JList();
+		usersList.setBounds(792, 295, 201, 182);
+		getContentPane().add(usersList);
+		
+		JButton btnRemoveUser = new JButton("Remove User");
+		btnRemoveUser.setBounds(843, 498, 112, 23);
+		getContentPane().add(btnRemoveUser);
+		
+		JLabel lblRoomName = new JLabel("Room Name");
+		lblRoomName.setBounds(1031, 97, 79, 14);
+		getContentPane().add(lblRoomName);
+		
+		roomNameTextField = new JTextField();
+		roomNameTextField.setBounds(1120, 94, 112, 20);
+		getContentPane().add(roomNameTextField);
+		roomNameTextField.setColumns(10);
+		
+		JButton btnAddRoom = new JButton("Add Room");
+		btnAddRoom.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+		btnAddRoom.setBounds(1120, 126, 112, 23);
+		getContentPane().add(btnAddRoom);
 	}
 	
 	public void initializeCalendar() {
@@ -302,9 +428,9 @@ public class MainFrame extends JFrame {
 	}
 	
 	public void submitButtonPressed() throws IOException {
-		String activityName = textField.getText();
+		String activityName = activityTextField.getText();
 		if(!activityName.isEmpty()) {
-			if(calendar.getSelectedRow() != -1) {
+			if(calendar.getSelectedRow() != -1 && calendar.getValueAt(calendar.getSelectedRow(), calendar.getSelectedColumn()) != null) {
 				int status = 0;
 				if(singleDayRB.isSelected()) {
 					status = Booking.singleDay;
@@ -412,6 +538,19 @@ public class MainFrame extends JFrame {
 		LoginPage login = new LoginPage();
 		login.setVisible(true);
 		this.dispose();
+	}
+	
+	public void addUser() throws IOException {
+		String name = nameTextField.getText();
+		String username = usernameTextField.getText();
+		String password = passwordTextField.getText();
+		String email = emailTextField.getText();
+		if(name != null && username != null && password != null && email != null) {
+			system.addUser(new User(name,username,password,email,0,0,system));
+		}
+		else {
+			JOptionPane.showMessageDialog(this, "All fields must be entered to add a user");
+		}
 	}
 	
 	public static void main(String[] args) {

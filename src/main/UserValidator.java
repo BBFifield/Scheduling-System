@@ -17,7 +17,7 @@ public class UserValidator {
 		String userNameCurrent = "";
 		String passwordCurrent = "";
 		
-		while(in.hasNextLine()) {
+		while(in.hasNext()) {
 			userNameCurrent = in.next();
 			passwordCurrent = in.next();
 			if(userNameCurrent.equals(username) && passwordCurrent.equals(password)) {
