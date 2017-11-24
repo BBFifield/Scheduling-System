@@ -95,12 +95,14 @@ public class SpaceSystem implements Serializable {
 		Collection<User> uList = users.values();
 		for(User u: uList) {
 			Collection<Booking> bList = getUserBookings(u);
-			Iterator<Booking> iterator = bList.iterator();
-			while(iterator.hasNext()) {
-				Booking b = iterator.next();
-				System.out.println(b.getRoom().getRoomId() + " " + r.getRoomId());
-				if(b.getRoom().getRoomId() == r.getRoomId()) {
-					iterator.remove();
+			if(bList != null) {
+				Iterator<Booking> iterator = bList.iterator();
+				while(iterator.hasNext()) {
+					Booking b = iterator.next();
+					System.out.println(b.getRoom().getRoomId() + " " + r.getRoomId());
+					if(b.getRoom().getRoomId() == r.getRoomId()) {
+						iterator.remove();
+					}
 				}
 			}
 		}
