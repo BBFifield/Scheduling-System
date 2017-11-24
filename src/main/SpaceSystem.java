@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import graphicsComponents.MainFrame;
 import schedule.Booking;
@@ -91,7 +92,19 @@ public class SpaceSystem implements Serializable {
 	}
 
 	public void removeRoom(Room r) throws IOException {
-		rooms.remove(r);
+		Collection<User> uList = users.values();
+		for(User u: uList) {
+			Collection<Booking> bList = getUserBookings(u);
+			Iterator<Booking> iterator = bList.iterator();
+			while(iterator.hasNext()) {
+				Booking b = iterator.next();
+				System.out.println(b.getRoom().getRoomId() + " " + r.getRoomId());
+				if(b.getRoom().getRoomId() == r.getRoomId()) {
+					iterator.remove();
+				}
+			}
+		}
+		rooms.remove(r.getRoomId());
 		updateFile(roomsFile, rooms);
 	}
 
@@ -104,6 +117,7 @@ public class SpaceSystem implements Serializable {
 	public void removeUser(String u) throws IOException {
 		users.remove(u);
 		bookings.remove(u);
+		updateLoginInfoFile();
 		updateFile(usersFile, users);
 		updateFile(bookingsFile, bookings);
 	}
@@ -138,6 +152,7 @@ public class SpaceSystem implements Serializable {
 			out.println();
 		}
 		out.flush();
+		out.close();
 	}
 
 	public void loadResources() throws ClassNotFoundException, IOException {

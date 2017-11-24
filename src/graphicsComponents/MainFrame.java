@@ -81,6 +81,12 @@ public class MainFrame extends JFrame {
 	private JLabel lblUserList;
 	private JTextField roomNameTextField;
 
+	private JButton btnRemoveBooking;
+	private JButton selectDayBookingsButton;
+	private JButton myBookingsButton;
+	private JList usersList;
+	private JList roomsList;
+
 
 	public enum Month{
 		JANUARY(0, 31, 0, 1), 
@@ -117,8 +123,11 @@ public class MainFrame extends JFrame {
 		initialize();
 		if(system.searchUser(UserValidator.userLoggedIn).getPermissions() == User.adminPermissions) {
 			initializeAdminGui();
+			initializeList(usersList, system.getUsers().values());
+			initializeList(roomsList, system.getRooms().values());
 		}
 		initializeRooms();
+
 	}
 
 	/**
@@ -143,7 +152,7 @@ public class MainFrame extends JFrame {
 		monthCB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				initializeCalendar();
-			}
+			} 
 		});
 		getContentPane().add(monthCB);
 		
@@ -215,7 +224,7 @@ public class MainFrame extends JFrame {
 		btnRequest.setBounds(690, 230, 132, 23);
 		getContentPane().add(btnRequest);
 		
-		JButton btnRemoveBooking = new JButton("Remove Booking");
+		btnRemoveBooking = new JButton("Remove Booking");
 		btnRemoveBooking.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				try {
@@ -228,7 +237,7 @@ public class MainFrame extends JFrame {
 		btnRemoveBooking.setBounds(549, 498, 167, 23);
 		getContentPane().add(btnRemoveBooking);
 		
-		JButton myBookingsButton = new JButton("My Bookings");
+		myBookingsButton = new JButton("My Bookings");
 		myBookingsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				myBookings();
@@ -237,7 +246,7 @@ public class MainFrame extends JFrame {
 		myBookingsButton.setBounds(364, 498, 167, 23);
 		getContentPane().add(myBookingsButton);
 		
-		JButton selectDayBookingsButton = new JButton("Bookings on Selected Day");
+		selectDayBookingsButton = new JButton("Bookings on Selected Day");
 		selectDayBookingsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				bookingsOnSelectedDay();
@@ -313,6 +322,9 @@ public class MainFrame extends JFrame {
 		lblLength.setBounds(454, 189, 46, 14);
 		durationSpinner.setBounds(560, 186, 132, 20);
 		btnRequest.setBounds(560, 230, 132, 23);
+		btnRemoveBooking.setBounds(399, 498, 167, 23);
+		selectDayBookingsButton.setBounds(20, 498, 167, 23);
+		myBookingsButton.setBounds(214, 498, 167, 23);
 		
 		JLabel lblAddUser = new JLabel("Add User");
 		lblAddUser.setBounds(824, 69, 79, 14);
@@ -332,6 +344,12 @@ public class MainFrame extends JFrame {
 		getContentPane().add(lblName);
 		
 		JButton btnApprove = new JButton("Approve Request");
+		btnApprove.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				approveRequest();
+			}
+			
+		});
 		btnApprove.setBounds(591, 498, 167, 23);
 		getContentPane().add(btnApprove);
 		
@@ -379,11 +397,21 @@ public class MainFrame extends JFrame {
 		lblUserList.setBounds(876, 270, 79, 14);
 		getContentPane().add(lblUserList);
 		
-		JList usersList = new JList();
+		DefaultListModel<User> modelU = new DefaultListModel<>();
+		usersList = new JList(modelU);
 		usersList.setBounds(792, 295, 201, 182);
 		getContentPane().add(usersList);
 		
 		JButton btnRemoveUser = new JButton("Remove User");
+		btnRemoveUser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					removeUser();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
 		btnRemoveUser.setBounds(843, 498, 112, 23);
 		getContentPane().add(btnRemoveUser);
 		
@@ -399,10 +427,37 @@ public class MainFrame extends JFrame {
 		JButton btnAddRoom = new JButton("Add Room");
 		btnAddRoom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				try {
+					addRoom();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 		btnAddRoom.setBounds(1120, 126, 112, 23);
 		getContentPane().add(btnAddRoom);
+		
+		DefaultListModel<Room> modelR = new DefaultListModel<>();
+		roomsList = new JList(modelR);
+		roomsList.setBounds(1031, 295, 201, 182);
+		getContentPane().add(roomsList);
+		
+		JLabel lblRoomsList = new JLabel("Rooms List");
+		lblRoomsList.setBounds(1107, 270, 89, 14);
+		getContentPane().add(lblRoomsList);
+		
+		JButton btnRemoveRoom = new JButton("Remove Room");
+		btnRemoveRoom.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					removeRoom();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		btnRemoveRoom.setBounds(1070, 498, 126, 23);
+		getContentPane().add(btnRemoveRoom);
 	}
 	
 	public void initializeCalendar() {
@@ -441,6 +496,13 @@ public class MainFrame extends JFrame {
 		}
 	}
 	
+	public void initializeList(JList list, Collection values) {
+		DefaultListModel listModel = (DefaultListModel) list.getModel();
+		for(Object value: values) {
+			listModel.addElement(value);
+		}
+	}
+	
 	public void setUserLabel(String userLabel) {
 		this.userLabel.setText(userLabel);
 	}
@@ -456,9 +518,12 @@ public class MainFrame extends JFrame {
 				else if(weekRB.isSelected()) {
 					status = Booking.eachWeek;
 				}
-				else {
-					System.out.println("hello");
+				else if(calendar.getSelectedRow() == 0) {
 					status = Booking.entireSemester;
+				}
+				else {
+					JOptionPane.showMessageDialog(this, "Select a day of the week to book a day for the rest of the semester");
+					return;
 				}
 				
 				String roomName = ((Room) roomCB.getSelectedItem()).toString();
@@ -506,13 +571,13 @@ public class MainFrame extends JFrame {
 		}
 	}
 	
-	public void clearBookingsList() {
-		DefaultListModel listModel = (DefaultListModel) bookingsList.getModel();
+	public void clearList(JList list) {
+		DefaultListModel listModel = (DefaultListModel) list.getModel();
 		listModel.removeAllElements();
 	}
 	
 	public void myBookings() {
-		clearBookingsList();
+		clearList(bookingsList);
 		ArrayList<Booking> bookings = system.getBookings().get(UserValidator.userLoggedIn);
 		if(bookings != null) {
 			for(int i = 0; i < bookings.size(); i++) {
@@ -525,7 +590,7 @@ public class MainFrame extends JFrame {
 	} 
 	
 	public void bookingsOnSelectedDay() {
-		clearBookingsList();
+		clearList(bookingsList);
 	
 		boolean selected = false;
 		for(int i = 0; i < calendar.getColumnCount(); i++) {
@@ -561,15 +626,66 @@ public class MainFrame extends JFrame {
 	}
 	
 	public void addUser() throws IOException {
+		User u;
 		String name = nameTextField.getText();
 		String username = usernameTextField.getText();
 		String password = passwordTextField.getText();
 		String email = emailTextField.getText();
 		if(name != null && username != null && password != null && email != null) {
-			system.addUser(new User(name,username,password,email,0,0,system));
+			u = new User(name,username,password,email,0,0,system);
+			system.addUser(u);
+			DefaultListModel listModel = (DefaultListModel) usersList.getModel();
+			listModel.addElement(u);
 		}
 		else {
 			JOptionPane.showMessageDialog(this, "All fields must be entered to add a user");
+		}
+	}
+	
+	public void removeUser() throws IOException {
+		if(usersList.isSelectionEmpty()) {
+			JOptionPane.showMessageDialog(this, "You must select a user first in the list to remove");
+		}
+		else {
+			DefaultListModel listModel = (DefaultListModel) usersList.getModel();
+			system.removeUser(((User) usersList.getSelectedValue()).getUserName());
+			listModel.removeElement(usersList.getSelectedValue());
+		}
+	}
+	
+	public void addRoom() throws IOException {
+		Room r;
+		String roomId = roomNameTextField.getText();
+		if(roomId != null) {
+			r = new Room(roomId, 0);
+			system.addRoom(r);
+			DefaultListModel listModel = (DefaultListModel) roomsList.getModel();
+			listModel.addElement(r);
+			roomCB.addItem(r);
+		}
+		else {
+			JOptionPane.showMessageDialog(this, "All fields must be entered to add a room");
+		}
+	}
+	
+	public void removeRoom() throws IOException {
+		if(roomsList.isSelectionEmpty()) {
+			JOptionPane.showMessageDialog(this, "You must select a room first in the list to remove");
+		}
+		else {
+			roomCB.removeItem(roomsList.getSelectedValue());
+			DefaultListModel listModel = (DefaultListModel) roomsList.getModel();
+			system.removeRoom((Room) roomsList.getSelectedValue());
+			listModel.removeElement(roomsList.getSelectedValue());
+		}
+	}
+	
+	public void approveRequest() {
+		if(bookingsList.isSelectionEmpty()) {
+			JOptionPane.showMessageDialog(this, "You must select a booking request first in the list to approve");
+		}
+		else {
+			
 		}
 	}
 

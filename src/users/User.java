@@ -114,6 +114,8 @@ public class User implements Serializable {
 		this.system = system;
 	}
 	
-	
+	public String toString() {
+		return userName;
+	}
 	
 }
