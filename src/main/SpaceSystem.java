@@ -12,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -189,7 +190,7 @@ public class SpaceSystem implements Serializable {
 			HashMap<String,Room> map = new HashMap<>();
 			fos = new FileOutputStream(roomsFile);
 			oos = new ObjectOutputStream(fos);
-			Room room = new Room("ARTS1000", 3.5);
+			Room room = new Room("ARTS1000", 3, 3, new ArrayList<>(Arrays.asList(0,1)));
 			map.put(room.getRoomId(),room);
 			oos.writeObject(map);
 			*/
