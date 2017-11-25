@@ -31,6 +31,7 @@ import javax.swing.table.TableColumnModel;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.awt.Font;
@@ -46,15 +47,16 @@ import javax.swing.DefaultListModel;
 import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
 import javax.swing.ButtonModel;
+import javax.swing.JCheckBox;
  
 public class MainFrame extends JFrame {
 	
-	private JTable calendar;
-	private JComboBox monthCB;
-	private JComboBox semesterCB;
+	private JTable table;
+	private WideComboBox monthCB;
+	private WideComboBox semesterCB;
 	private JSpinner timeSpinner;
 	private JSpinner durationSpinner;
-	private JComboBox roomCB;
+	private WideComboBox roomCB;
 	private JTextField activityTextField;
 	private SpaceSystem system;
 	private JLabel userLabel;
@@ -86,7 +88,12 @@ public class MainFrame extends JFrame {
 	private JButton myBookingsButton;
 	private JList usersList;
 	private JList roomsList;
-
+	
+	ArrayList<JCheckBox> dayCheckBoxes = new ArrayList<>();
+	
+	private Date date = new Date();
+	private JSpinner timeFromSpinner;
+	private JSpinner timeToSpinner;
 
 	public enum Month{
 		JANUARY(0, 31, 0, 1), 
@@ -134,7 +141,7 @@ public class MainFrame extends JFrame {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		this.setBounds(400, 50, 900, 600);
+		this.setBounds(400, 50, 867, 618);
 		getContentPane().setLayout(null);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Space System");
@@ -147,7 +154,7 @@ public class MainFrame extends JFrame {
 		lblNewLabel.setBounds(20, 54, 126, 14);
 		getContentPane().add(lblNewLabel);
 		
-		monthCB = new JComboBox(Month.values());
+		monthCB = new WideComboBox(Month.values());
 		monthCB.setBounds(20, 79, 126, 20);
 		monthCB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
@@ -158,21 +165,20 @@ public class MainFrame extends JFrame {
 		
 		int row = 7;	
 		int column = 7;
-		calendar = new JTable(row, column);
-		calendar.setBounds(20, 110, 376, 112);
-		calendar.setCellSelectionEnabled(true);
+		table = new JTable(row, column);
+		table.setBounds(20, 110, 376, 112);
+		table.setCellSelectionEnabled(true);
 		initializeCalendar();
-		getContentPane().add(calendar);
+		getContentPane().add(table);
 		
-		Date date = new Date();
 		timeSpinner = new JSpinner(new SpinnerDateModel(date, null, null, Calendar.HOUR_OF_DAY));
-		timeSpinner.setBounds(690, 155, 132, 20);
-		JSpinner.DateEditor de = new JSpinner.DateEditor(timeSpinner, "HH:mm:ss");
+		timeSpinner.setBounds(561, 155, 136, 20);
+		JSpinner.DateEditor de = new JSpinner.DateEditor(timeSpinner, "HH");
 		timeSpinner.setEditor(de);
 		getContentPane().add(timeSpinner);
 		
 		durationSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 3, 1));
-		durationSpinner.setBounds(690, 186, 132, 20);
+		durationSpinner.setBounds(561, 186, 136, 20);
 		JSpinner.NumberEditor ne1 = new JSpinner.NumberEditor(durationSpinner);
 		durationSpinner.setEditor(ne1);
 		getContentPane().add(durationSpinner);
@@ -183,32 +189,32 @@ public class MainFrame extends JFrame {
 		getContentPane().add(lblNewLabel_1);
 		
 		lblRequestBooking = new JLabel("Request Booking");
-		lblRequestBooking.setBounds(625, 69, 119, 14);
+		lblRequestBooking.setBounds(518, 72, 119, 14);
 		getContentPane().add(lblRequestBooking);
 		
 		lblLength = new JLabel("Length");
-		lblLength.setBounds(555, 189, 46, 14);
+		lblLength.setBounds(454, 189, 46, 14);
 		getContentPane().add(lblLength);
 		
-		lblTime = new JLabel("Time");
-		lblTime.setBounds(555, 158, 46, 14); 
+		lblTime = new JLabel("Start Time (Hours)");
+		lblTime.setBounds(454, 158, 106, 14); 
 		getContentPane().add(lblTime);
 		
 		activityTextField = new JTextField();
-		activityTextField.setBounds(690, 94, 132, 19);
+		activityTextField.setBounds(561, 94, 136, 19);
 		getContentPane().add(activityTextField);
 		activityTextField.setColumns(10);
 		
 		lblActivityName = new JLabel("Activity Name");
-		lblActivityName.setBounds(555, 97, 97, 14);
+		lblActivityName.setBounds(454, 97, 97, 14);
 		getContentPane().add(lblActivityName);
 		
 		lblRoom = new JLabel("Room ");
-		lblRoom.setBounds(555, 130, 46, 14);
+		lblRoom.setBounds(454, 133, 46, 14);
 		getContentPane().add(lblRoom);
 		
-		roomCB = new JComboBox();
-		roomCB.setBounds(690, 124, 132, 20);
+		roomCB = new WideComboBox();
+		roomCB.setBounds(561, 124, 136, 20);
 		getContentPane().add(roomCB);
 		
 		btnRequest = new JButton("Submit Request");
@@ -221,7 +227,7 @@ public class MainFrame extends JFrame {
 				}
 			}
 		});
-		btnRequest.setBounds(690, 230, 132, 23);
+		btnRequest.setBounds(561, 230, 136, 23);
 		getContentPane().add(btnRequest);
 		
 		btnRemoveBooking = new JButton("Remove Booking");
@@ -234,7 +240,7 @@ public class MainFrame extends JFrame {
 				}
 			}
 		});
-		btnRemoveBooking.setBounds(549, 498, 167, 23);
+		btnRemoveBooking.setBounds(399, 515, 167, 23);
 		getContentPane().add(btnRemoveBooking);
 		
 		myBookingsButton = new JButton("My Bookings");
@@ -243,7 +249,7 @@ public class MainFrame extends JFrame {
 				myBookings();
 			}
 		});
-		myBookingsButton.setBounds(364, 498, 167, 23);
+		myBookingsButton.setBounds(214, 515, 167, 23);
 		getContentPane().add(myBookingsButton);
 		
 		selectDayBookingsButton = new JButton("Bookings on Selected Day");
@@ -252,7 +258,7 @@ public class MainFrame extends JFrame {
 				bookingsOnSelectedDay();
 			}
 		});
-		selectDayBookingsButton.setBounds(170, 498, 167, 23);
+		selectDayBookingsButton.setBounds(20, 515, 167, 23);
 		getContentPane().add(selectDayBookingsButton);
 		
 		btnLogout = new JButton("Logout");
@@ -266,14 +272,14 @@ public class MainFrame extends JFrame {
 		
 		DefaultListModel<Booking> model = new DefaultListModel<>();
 		bookingsList = new JList<>(model);
-		bookingsList.setBounds(155, 295, 603, 182);
+		bookingsList.setBounds(155, 322, 650, 182);
 		getContentPane().add(bookingsList);
 		
 		JLabel lblBookings = new JLabel("Bookings List");
-		lblBookings.setBounds(356, 270, 112, 14);
+		lblBookings.setBounds(356, 297, 112, 14);
 		getContentPane().add(lblBookings);
 		
-		semesterCB = new JComboBox(new String[]{"Fall", "Winter", "Summer"});
+		semesterCB = new WideComboBox(new String[]{"Fall", "Winter", "Summer"});
 		semesterCB.setBounds(193, 79, 119, 20);
 		getContentPane().add(semesterCB);
 		
@@ -309,22 +315,22 @@ public class MainFrame extends JFrame {
 	}
 	
 	public void initializeAdminGui() {
-		this.setBounds(0,0,1300,600);
+		this.setBounds(0,0,1400,600);
 		userLabel.setBounds(1000, 13, 126, 23);
 		btnLogout.setBounds(1150, 13, 89, 23);
 		lblRequestBooking.setBounds(541, 69, 119, 14);
 		lblActivityName.setBounds(454, 97, 97, 14);
-		activityTextField.setBounds(560, 94, 132, 19);
+		activityTextField.setBounds(560, 94, 200, 19);
 		lblRoom.setBounds(454, 130, 46, 14);
-		roomCB.setBounds(560, 124, 132, 20);
-		lblTime.setBounds(454, 158, 46, 14);
-		timeSpinner.setBounds(560, 155, 132, 20);
+		roomCB.setBounds(560, 124, 200, 20);
+		lblTime.setBounds(454, 158, 120, 14);
+		timeSpinner.setBounds(560, 155, 200, 20);
 		lblLength.setBounds(454, 189, 46, 14);
-		durationSpinner.setBounds(560, 186, 132, 20);
-		btnRequest.setBounds(560, 230, 132, 23);
-		btnRemoveBooking.setBounds(399, 498, 167, 23);
-		selectDayBookingsButton.setBounds(20, 498, 167, 23);
-		myBookingsButton.setBounds(214, 498, 167, 23);
+		durationSpinner.setBounds(560, 186, 200, 20);
+		btnRequest.setBounds(560, 230, 180, 23);
+		btnRemoveBooking.setBounds(399, 515, 167, 23);
+		selectDayBookingsButton.setBounds(20, 515, 167, 23);
+		myBookingsButton.setBounds(214, 515, 167, 23);
 		
 		JLabel lblAddUser = new JLabel("Add User");
 		lblAddUser.setBounds(824, 69, 79, 14);
@@ -350,7 +356,7 @@ public class MainFrame extends JFrame {
 			}
 			
 		});
-		btnApprove.setBounds(591, 498, 167, 23);
+		btnApprove.setBounds(591, 515, 167, 23);
 		getContentPane().add(btnApprove);
 		
 		lblUsername = new JLabel("Username");
@@ -368,7 +374,7 @@ public class MainFrame extends JFrame {
 		passwordTextField.setColumns(10);
 		
 		lblPassword = new JLabel("Password");
-		lblPassword.setBounds(792, 158, 46, 14);
+		lblPassword.setBounds(792, 158, 67, 14);
 		getContentPane().add(lblPassword);
 		
 		lblEmail = new JLabel("Email");
@@ -394,12 +400,12 @@ public class MainFrame extends JFrame {
 		getContentPane().add(btnAddUser);
 		
 		lblUserList = new JLabel("Users List");
-		lblUserList.setBounds(876, 270, 79, 14);
+		lblUserList.setBounds(876, 296, 79, 14);
 		getContentPane().add(lblUserList);
 		
 		DefaultListModel<User> modelU = new DefaultListModel<>();
 		usersList = new JList(modelU);
-		usersList.setBounds(792, 295, 201, 182);
+		usersList.setBounds(825, 322, 148, 182);
 		getContentPane().add(usersList);
 		
 		JButton btnRemoveUser = new JButton("Remove User");
@@ -412,11 +418,11 @@ public class MainFrame extends JFrame {
 				}
 			}
 		});
-		btnRemoveUser.setBounds(843, 498, 112, 23);
+		btnRemoveUser.setBounds(843, 515, 112, 23);
 		getContentPane().add(btnRemoveUser);
 		
 		JLabel lblRoomName = new JLabel("Room Name");
-		lblRoomName.setBounds(1031, 97, 79, 14);
+		lblRoomName.setBounds(984, 97, 79, 14);
 		getContentPane().add(lblRoomName);
 		
 		roomNameTextField = new JTextField();
@@ -424,7 +430,7 @@ public class MainFrame extends JFrame {
 		getContentPane().add(roomNameTextField);
 		roomNameTextField.setColumns(10);
 		
-		JButton btnAddRoom = new JButton("Add Room");
+		JButton btnAddRoom = new JButton("Set Room");
 		btnAddRoom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
@@ -434,16 +440,16 @@ public class MainFrame extends JFrame {
 				}
 			}
 		});
-		btnAddRoom.setBounds(1120, 126, 112, 23);
+		btnAddRoom.setBounds(1120, 261, 112, 23);
 		getContentPane().add(btnAddRoom);
 		
 		DefaultListModel<Room> modelR = new DefaultListModel<>();
 		roomsList = new JList(modelR);
-		roomsList.setBounds(1031, 295, 201, 182);
+		roomsList.setBounds(1031, 322, 301, 182);
 		getContentPane().add(roomsList);
 		
 		JLabel lblRoomsList = new JLabel("Rooms List");
-		lblRoomsList.setBounds(1107, 270, 89, 14);
+		lblRoomsList.setBounds(1150, 297, 89, 14);
 		getContentPane().add(lblRoomsList);
 		
 		JButton btnRemoveRoom = new JButton("Remove Room");
@@ -456,15 +462,70 @@ public class MainFrame extends JFrame {
 				}
 			}
 		});
-		btnRemoveRoom.setBounds(1070, 498, 126, 23);
+		btnRemoveRoom.setBounds(1120, 515, 126, 23);
 		getContentPane().add(btnRemoveRoom);
+		
+		timeFromSpinner = new JSpinner(new SpinnerDateModel(date, null, null, Calendar.HOUR_OF_DAY));
+		timeFromSpinner.setBounds(1120, 127, 112, 20);
+		JSpinner.DateEditor de1 = new JSpinner.DateEditor(timeFromSpinner, "HH");
+		timeFromSpinner.setEditor(de1);
+		getContentPane().add(timeFromSpinner);
+		
+		timeToSpinner = new JSpinner(new SpinnerDateModel(date, null, null, Calendar.HOUR_OF_DAY));
+		timeToSpinner.setBounds(1120, 158, 112, 20);
+		JSpinner.DateEditor de2 = new JSpinner.DateEditor(timeToSpinner, "HH");
+		timeToSpinner.setEditor(de2);
+		getContentPane().add(timeToSpinner);
+		
+		JLabel lblTimeFrom = new JLabel("Available From (Hours)");
+		lblTimeFrom.setBounds(984, 130, 142, 14);
+		getContentPane().add(lblTimeFrom);
+		
+		JLabel lblTimeTo = new JLabel("Available To (Hours)");
+		lblTimeTo.setBounds(984, 158, 119, 14);
+		getContentPane().add(lblTimeTo);
+		
+		JCheckBox chckbxMon = new JCheckBox("Mon");
+		chckbxMon.setBounds(1007, 199, 57, 23);
+		dayCheckBoxes.add(chckbxMon);
+		getContentPane().add(chckbxMon);
+		
+		JCheckBox chckbxTue = new JCheckBox("Tue");
+		chckbxTue.setBounds(1069, 199, 57, 23);
+		dayCheckBoxes.add(chckbxTue);
+		getContentPane().add(chckbxTue);
+		
+		JCheckBox chckbxWed = new JCheckBox("Wed");
+		chckbxWed.setBounds(1139, 199, 57, 23);
+		dayCheckBoxes.add(chckbxWed);
+		getContentPane().add(chckbxWed);
+		
+		JCheckBox chckbxThur = new JCheckBox("Thur");
+		chckbxThur.setBounds(1209, 199, 57, 23);
+		dayCheckBoxes.add(chckbxThur);
+		getContentPane().add(chckbxThur);
+		
+		JCheckBox chckbxFri = new JCheckBox("Fri");
+		chckbxFri.setBounds(1064, 230, 46, 23);
+		dayCheckBoxes.add(chckbxFri);
+		getContentPane().add(chckbxFri);
+		
+		JCheckBox chckbxSat = new JCheckBox("Sat");
+		chckbxSat.setBounds(1116, 230, 46, 23);
+		dayCheckBoxes.add(chckbxSat);
+		getContentPane().add(chckbxSat);
+		
+		JCheckBox chckbxSun = new JCheckBox("Sun");
+		chckbxSun.setBounds(1164, 230, 57, 23);
+		dayCheckBoxes.add(chckbxSun);
+		getContentPane().add(chckbxSun);
 	}
 	
 	public void initializeCalendar() {
-		JTableHeader header = calendar.getTableHeader();
+		JTableHeader header = table.getTableHeader();
 		String[] dayOfWeek = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
-		for(int i = 0; i < calendar.getColumnCount(); i++) {
-			calendar.setValueAt(dayOfWeek[i], 0, i);
+		for(int i = 0; i < table.getColumnCount(); i++) {
+			table.setValueAt(dayOfWeek[i], 0, i);
 		}
 		Month selected = (Month) monthCB.getSelectedItem();
 		int dayCount = 0;
@@ -473,15 +534,15 @@ public class MainFrame extends JFrame {
 				
 				if(j < selected.indexStartDay && i == 1) {
 				    
-					calendar.setValueAt(null, 1, j);
+					table.setValueAt(null, 1, j);
 				}
 				else if(i == 1) {
 					dayCount++;
-					calendar.setValueAt(dayCount ,1, j);
+					table.setValueAt(dayCount ,1, j);
 				}
 				else {
 					dayCount++;
-					calendar.setValueAt(dayCount ,i, j);
+					table.setValueAt(dayCount ,i, j);
 				}
 			}
 		}
@@ -510,7 +571,7 @@ public class MainFrame extends JFrame {
 	public void submitButtonPressed() throws IOException {
 		String activityName = activityTextField.getText();
 		if(!activityName.isEmpty()) {
-			if(calendar.getSelectedRow() != -1 && calendar.getValueAt(calendar.getSelectedRow(), calendar.getSelectedColumn()) != null) {
+			if(table.getSelectedRow() != -1 && table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()) != null) {
 				int status = 0;
 				if(singleDayRB.isSelected()) {
 					status = Booking.singleDay;
@@ -518,7 +579,7 @@ public class MainFrame extends JFrame {
 				else if(weekRB.isSelected()) {
 					status = Booking.eachWeek;
 				}
-				else if(calendar.getSelectedRow() == 0) {
+				else if(table.getSelectedRow() == 0) {
 					status = Booking.entireSemester;
 				}
 				else {
@@ -528,23 +589,23 @@ public class MainFrame extends JFrame {
 				
 				String roomName = ((Room) roomCB.getSelectedItem()).toString();
 				Date spinnerDate = (Date) timeSpinner.getValue();
-				Calendar date = Calendar.getInstance();
+				Calendar calendarInstance = Calendar.getInstance();
 				
-				date.setTime(spinnerDate);
+				calendarInstance.setTime(spinnerDate);
 				int monthIndex = ((Month) monthCB.getSelectedItem()).monthIndex;
-				int weekIndex = calendar.getSelectedRow();
-				date.set(Calendar.DAY_OF_WEEK, weekIndex);
+				int weekIndex = table.getSelectedRow();
+				calendarInstance.set(Calendar.DAY_OF_WEEK, weekIndex);
 				
 				int duration = (Integer) durationSpinner.getValue();
-				if(calendar.getSelectedRow() == 0) {
+				if(table.getSelectedRow() == 0) {
 					String semester = (String) semesterCB.getSelectedItem();
-					system.addBooking(new Booking(activityName,system.searchUser(UserValidator.userLoggedIn), system.searchRoom(roomName), duration, date, semester));
+					system.addBooking(new Booking(activityName,system.searchUser(UserValidator.userLoggedIn), system.searchRoom(roomName), duration, calendarInstance, semester));
 				}
 				else {
-					int day = ((int) calendar.getValueAt(calendar.getSelectedRow(), calendar.getSelectedColumn()));
-					date.set(Calendar.DAY_OF_MONTH, day);
-					date.set(Calendar.MONTH, monthIndex);
-					system.addBooking(new Booking(activityName,system.searchUser(UserValidator.userLoggedIn), system.searchRoom(roomName), duration, status, date));
+					int day = ((int) table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()));
+					calendarInstance.set(Calendar.DAY_OF_MONTH, day);
+					calendarInstance.set(Calendar.MONTH, monthIndex);
+					system.addBooking(new Booking(activityName,system.searchUser(UserValidator.userLoggedIn), system.searchRoom(roomName), duration, status, calendarInstance));
 				}
 				
 				JOptionPane.showMessageDialog(this, "Booking request sent!");
@@ -593,15 +654,15 @@ public class MainFrame extends JFrame {
 		clearList(bookingsList);
 	
 		boolean selected = false;
-		for(int i = 0; i < calendar.getColumnCount(); i++) {
-			if(calendar.isColumnSelected(i)) {
+		for(int i = 0; i < table.getColumnCount(); i++) {
+			if(table.isColumnSelected(i)) {
 				selected = true;
 			}
 			
 		}
 			
 		if(selected == true) {
-			int day = (int) calendar.getValueAt(calendar.getSelectedRow(), calendar.getSelectedColumn());
+			int day = (int) table.getValueAt(table.getSelectedRow(), table.getSelectedColumn());
 			Collection<ArrayList<Booking>> bList = (Collection<ArrayList<Booking>>) system.getBookings().values();
 			if(bList != null) {
 				for(ArrayList<Booking> a: bList) {
@@ -656,15 +717,48 @@ public class MainFrame extends JFrame {
 	public void addRoom() throws IOException {
 		Room r;
 		String roomId = roomNameTextField.getText();
-		if(roomId != null) {
-			r = new Room(roomId, 0);
-			system.addRoom(r);
-			DefaultListModel listModel = (DefaultListModel) roomsList.getModel();
-			listModel.addElement(r);
-			roomCB.addItem(r);
+		Calendar c1 = Calendar.getInstance();
+		Calendar c2 = Calendar.getInstance();
+		
+		c1.setTime((Date) timeFromSpinner.getValue());
+		int timeFrom = c1.get(Calendar.HOUR_OF_DAY);
+		
+		c2.setTime((Date) timeToSpinner.getValue());
+		int timeTo = c2.get(Calendar.HOUR_OF_DAY);
+		
+		ArrayList<Calendar> days = new ArrayList<>();
+		
+		for(int i = 0; i < dayCheckBoxes.size(); i++) {
+			if(dayCheckBoxes.get(i).isSelected()) {
+				Calendar calendarInstance = Calendar.getInstance();
+				calendarInstance.set(calendarInstance.DAY_OF_WEEK, i+1);
+				days.add(calendarInstance);
+			}
+		}
+	
+		if(roomId != null && timeFrom < timeTo && days.size() > 0) {
+			if(system.getRooms().get(roomId) != null) {
+				if(system.getRooms().get(roomId).getTimeFrom() == timeFrom && system.getRooms().get(roomId).getTimeTo() == timeTo) {
+					r = system.getRooms().get(roomId);
+					r.merge(days);
+					clearList(roomsList);
+					initializeList(roomsList, system.getRooms().values());
+				}
+				else {
+					JOptionPane.showMessageDialog(this, "The addition of days requires that room times be equivalent to those on record");
+					return;
+				}
+			}
+			else {
+				r = new Room(roomId, timeFrom, timeTo, days);
+				system.addRoom(r);
+				DefaultListModel listModel = (DefaultListModel) roomsList.getModel();
+				listModel.addElement(r);
+				roomCB.addItem(r);
+			}
 		}
 		else {
-			JOptionPane.showMessageDialog(this, "All fields must be entered to add a room");
+			JOptionPane.showMessageDialog(this, "All fields must be entered to add a room. Remember that the starting hours needs to be less than the ending hours.");
 		}
 	}
 	
@@ -698,8 +792,4 @@ public class MainFrame extends JFrame {
 			}
 		});
 	}
-	
-	
-	
-	
 }
