@@ -6,6 +6,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JButton;
 
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
@@ -26,7 +27,6 @@ public class LoginPage extends JFrame {
 	 * @wbp.parser.entryPoint
 	 */
 	public LoginPage() {
-		this.system = system;
 		initialize();
 	}
 	
@@ -68,7 +68,14 @@ public class LoginPage extends JFrame {
 				try {
 					if(UserValidator.validate(userName, password)) {
 						system = new SpaceSystem();
-						MainFrame window = new MainFrame(system);
+						System.out.println(system);
+						CommonFrame window;
+						if(system.searchUser(UserValidator.userLoggedIn).getPermissions() == 1) {
+							window = new AdminFrame(system);
+						}
+						else {
+							window = new UserFrame(system);
+						}
 						window.setUserLabel("Welcome " + system.searchUser(UserValidator.userLoggedIn).getName() + "!");
 						system.addGui(window);
 						window.setVisible(true);
@@ -87,5 +94,14 @@ public class LoginPage extends JFrame {
 				}
 			}
 		}
+	}
+	
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				LoginPage login = new LoginPage();
+				login.setVisible(true);
+			}
+		});
 	}
 }
