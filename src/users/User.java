@@ -50,12 +50,6 @@ public class User implements Serializable {
 		
 	}
 	
-	public void addUser(User user) throws IOException{
-		if(permissions == adminPermissions) {
-			getSystem().addUser(user);
-		}
-	}
-	
 	public void addRoom (Room room) throws IOException{
 		if(permissions == adminPermissions) {
 			getSystem().addRoom(room);

@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import graphicsComponents.CommonFrame;
 import graphicsComponents.MainFrame;
 import schedule.Booking;
 import schedule.Room;
@@ -35,10 +36,9 @@ public class SpaceSystem implements Serializable {
 	private boolean pendingsSent = true;
 	private int generatedActivityID;
 	
-	private MainFrame gui;
+	private CommonFrame gui;
 	private boolean resourcesLoaded = false;
 
-	private File usersFile = new File("resources/users.txt");
 	private File roomsFile = new File("resources/rooms.txt");
 	private File bookingsFile = new File("resources/bookings.txt");
 	private File pendingsFile = new File("resources/pendingRequests.txt");
@@ -81,8 +81,8 @@ public class SpaceSystem implements Serializable {
 		this.users = users;
 	}
 
-	public void addGui(MainFrame gui) {
-		this.gui = gui;
+	public void addGui(CommonFrame window) {
+		this.gui = window;
 	}
 
 	public void sendEmail() {
@@ -164,20 +164,6 @@ public class SpaceSystem implements Serializable {
 		updateFile(roomsFile, rooms);
 	}
 
-	public void addUser(User u) throws IOException {
-		users.put(u.getUserName(), u);
-		updateLoginInfoFile();
-		updateFile(usersFile, users);
-	}
-
-	public void removeUser(String u) throws IOException {
-		users.remove(u);
-		bookings.remove(u);
-		updateLoginInfoFile();
-		updateFile(usersFile, users);
-		updateFile(bookingsFile, bookings);
-	}
-
 	public User searchUser(String userName) {
 		return users.get(userName);
 	}
@@ -227,24 +213,17 @@ public class SpaceSystem implements Serializable {
 		FileOutputStream fos;
 		ObjectOutputStream oos;
 		
-		try {
-			/*
-			HashMap<String,User> map = new HashMap<>();
-			fos = new FileOutputStream(usersFile);
-			oos = new ObjectOutputStream(fos);
-			User u = new User("Principal", "a", "1", "blah@gmail.com", 1, 0, this);
-			map.put(u.getUserName(),u);
-			oos.writeObject(map);
-			*/
-
-			fis = new FileInputStream(usersFile);
-			ois = new ObjectInputStream(fis);
-			while (true) {
-				users = (HashMap<String,User>) ois.readObject();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		User u1 = new User("Principal", "a", "1", "blah@gmail.com", 1, 0, this);
+		User u2 = new User("Brandon", "b", "1", "hello@gmail.com", 0, 0, this);
+		User u3 = new User("Sam", "c", "1", "aha@gmail.com", 0, 0, this);
+		User u4 = new User("Justin", "d", "1", "you@gmail.com", 0, 0, this);
+		User u5 = new User("Adrian", "e", "1", "by@gmail.com", 0, 0, this);
+		
+		users.put(u1.getUserName(), u1);
+		users.put(u2.getUserName(), u2);
+		users.put(u3.getUserName(), u3);
+		users.put(u4.getUserName(), u4);
+		users.put(u5.getUserName(), u5);
 
 		try {
 			/*
