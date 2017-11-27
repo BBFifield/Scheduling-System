@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.Container;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,10 +13,12 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import graphicsComponents.MainFrame;
 import schedule.Booking;
@@ -27,12 +30,18 @@ public class SpaceSystem implements Serializable {
 	private HashMap<String, Room> rooms = new HashMap<>();
 	private HashMap<String, ArrayList<Booking>> bookings = new HashMap<>();
 	private HashMap<String, User> users = new HashMap<>();
+	private HashMap<Integer, LinkedList<Booking>> pendingRequests = new HashMap<>();
+	
+	private boolean pendingsSent = true;
+	private int generatedActivityID;
+	
 	private MainFrame gui;
 	private boolean resourcesLoaded = false;
 
 	private File usersFile = new File("resources/users.txt");
 	private File roomsFile = new File("resources/rooms.txt");
 	private File bookingsFile = new File("resources/bookings.txt");
+	private File pendingsFile = new File("resources/pendingRequests.txt");
 	private File loginInfo = new File("resources/loginInfo.txt");
 	
 
@@ -55,6 +64,14 @@ public class SpaceSystem implements Serializable {
 	public void setBookings(HashMap<String, ArrayList<Booking>> bookings) {
 		this.bookings = bookings;
 	}
+	
+	public HashMap<Integer, LinkedList<Booking>> getPendingRequests() {
+		return pendingRequests;
+	}
+
+	public void setPendingRequests(HashMap<Integer, LinkedList<Booking>> pendingRequests) {
+		this.pendingRequests = pendingRequests;
+	}
 
 	public HashMap<String, User> getUsers() {
 		return users;
@@ -71,6 +88,32 @@ public class SpaceSystem implements Serializable {
 	public void sendEmail() {
 
 	} 
+	
+	public boolean isPendingsSent() {
+		return pendingsSent;
+	}
+
+	public void setPendingsSent(boolean pendingsSent) {
+		this.pendingsSent = pendingsSent;
+	}
+	
+	public int generateActivityID() {
+		Calendar d = Calendar.getInstance();
+		if(isPendingsSent()) {
+			setGeneratedActivityID(d.hashCode());
+			setPendingsSent(false);
+			
+		}
+		return generatedActivityID;
+	}
+	
+	public int getGeneratedActivityID() {
+		return generatedActivityID;
+	}
+
+	public void setGeneratedActivityID(int generatedActivityID) {
+		this.generatedActivityID = generatedActivityID;
+	}
 
 	public void addBooking(Booking b) throws IOException {
 		if (getUserBookings(b.getUser()) == null) {
@@ -78,12 +121,24 @@ public class SpaceSystem implements Serializable {
 		}
 		getUserBookings(b.getUser()).add(b);
 		updateFile(bookingsFile, bookings);
-
 	}
 
 	public void removeBooking(Booking b) throws IOException {
 		getUserBookings(b.getUser()).remove(b);
 		updateFile(bookingsFile, bookings);
+	}
+	
+	public void addPendingRequest(Booking b) throws IOException {
+		if (getActivityPendingRequests(b.getActivityID()) == null) {
+			pendingRequests.put(b.getActivityID(), new LinkedList<Booking>());
+		}
+		getActivityPendingRequests(b.getActivityID()).add(b);
+		updateFile(pendingsFile, pendingRequests);
+	}
+	
+	public void removePendingRequest(int activityID) throws IOException {
+		pendingRequests.remove(activityID);
+		updateFile(pendingsFile, pendingRequests);
 	}
 
 	public void addRoom(Room r) throws IOException {
@@ -99,7 +154,6 @@ public class SpaceSystem implements Serializable {
 				Iterator<Booking> iterator = bList.iterator();
 				while(iterator.hasNext()) {
 					Booking b = iterator.next();
-					System.out.println(b.getRoom().getRoomId() + " " + r.getRoomId());
 					if(b.getRoom().getRoomId() == r.getRoomId()) {
 						iterator.remove();
 					}
@@ -136,6 +190,10 @@ public class SpaceSystem implements Serializable {
 		return bookings.get(u.getUserName());
 	} 
 	
+	public LinkedList<Booking> getActivityPendingRequests(int activityID) {
+		return pendingRequests.get(activityID);
+	}
+	
 	public void updateFile(File f, HashMap m) throws IOException {
 		FileOutputStream fos = new FileOutputStream(f);
 		ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -144,6 +202,10 @@ public class SpaceSystem implements Serializable {
 		
 		fos.close();
 		oos.close();
+	}
+	
+	public void confirmRequestRank() throws IOException {
+		updateFile(pendingsFile, pendingRequests);
 	}
 	
 	public void updateLoginInfoFile() throws IOException {
@@ -189,7 +251,7 @@ public class SpaceSystem implements Serializable {
 			HashMap<String,Room> map = new HashMap<>();
 			fos = new FileOutputStream(roomsFile);
 			oos = new ObjectOutputStream(fos);
-			Room room = new Room("ARTS1000", 3.5);
+			Room room = new Room("ARTS1000", 3, 3, new ArrayList<>(Arrays.asList(0,1)));
 			map.put(room.getRoomId(),room);
 			oos.writeObject(map);
 			*/
@@ -215,8 +277,21 @@ public class SpaceSystem implements Serializable {
 			e.printStackTrace();
 		}
 		
+		try {
+			fis = new FileInputStream(pendingsFile);
+			ois = new ObjectInputStream(fis);
+
+			while (true) {
+				pendingRequests = (HashMap<Integer,LinkedList<Booking>>) ois.readObject();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		fis.close();
 		ois.close();
 		resourcesLoaded = true;
 	}
+
+	
 }

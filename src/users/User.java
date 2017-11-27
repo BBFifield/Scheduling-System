@@ -2,6 +2,8 @@ package users;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import main.SpaceSystem;
 import schedule.Booking;
