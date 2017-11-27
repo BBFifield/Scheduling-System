@@ -11,12 +11,18 @@ public class Room implements Serializable {
 	private int timeFrom;
 	private int timeTo;
 	private ArrayList<Calendar> daysAvailable;
-		
-	public Room(String roomId, int timeFrom, int timeTo, ArrayList<Calendar> daysAvailable) {
+	private int semester;
+	
+	public static final int WINTER_SEMESTER = 0;
+	public static final int SUMMER_SEMESTER = 1;
+	public static final int FALL_SEMESTER = 2;
+	
+	public Room(String roomId, int timeFrom, int timeTo, ArrayList<Calendar> daysAvailable, int semester) {
 		this.roomId = roomId;
 		this.timeFrom = timeFrom;
 		this.timeTo = timeTo;
 		this.daysAvailable = daysAvailable;
+		this.semester = semester;
 	}
 		
 	public String getRoomId(){
@@ -50,6 +56,14 @@ public class Room implements Serializable {
 	public void setDaysAvailable(ArrayList<Calendar> daysAvailable) {
 		this.daysAvailable = daysAvailable;
 	}
+	
+	public int getSemester() {
+		return semester;
+	}
+
+	public void setSemester(int semester) {
+		this.semester = semester;
+	}
 
 	public void merge(ArrayList<Calendar> otherDaysAvailable) {
 		for(Calendar c1: otherDaysAvailable) {
@@ -78,7 +92,7 @@ public class Room implements Serializable {
 				daysString.add("T");
 				break;
 			case 3:
-				daysString.add("W");
+				daysString.add("W"); 
 				break;
 			case 4:
 				daysString.add("TH");
