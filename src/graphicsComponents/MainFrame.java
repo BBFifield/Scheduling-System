@@ -705,7 +705,7 @@ public class MainFrame extends JFrame {
 					if(index == 0) {
 						return;
 					}
-					requests.remove(index);
+					requests.remove(index); 
 					requests.add(index - 1, b);
 					initializeList(bookingsList, requests);
 				}
