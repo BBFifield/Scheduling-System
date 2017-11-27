@@ -8,6 +8,8 @@ import users.User;
 
 
 public class Booking implements Serializable {
+	
+	private int activityID;
 	private String activityName;
 	private User user;
 	private Room room;
@@ -21,7 +23,8 @@ public class Booking implements Serializable {
 	public static final int eachWeek = 1;
 	public static final int entireSemester = 2;
 	
-	public Booking(String activityName, User user, Room room, int timeBooked, int status, Calendar dateBooked) {
+	public Booking(int activityID, String activityName, User user, Room room, int timeBooked, int status, Calendar dateBooked) {
+		this.activityID = activityID;
 		this.activityName = activityName;
 		this.user = user;
 		this.room = room;
@@ -30,7 +33,8 @@ public class Booking implements Serializable {
 		this.dateBooked = dateBooked;
 	}
 	
-	public Booking(String activityName, User user, Room room, int timeBooked, Calendar dateBooked, String semester) {
+	public Booking(int activityID, String activityName, User user, Room room, int timeBooked, Calendar dateBooked, String semester) {
+		this.activityID = activityID;
 		this.activityName = activityName;
 		this.user = user;
 		this.room = room;
@@ -38,6 +42,14 @@ public class Booking implements Serializable {
 		this.dateBooked = dateBooked;
 		this.setSemester(semester);
 		this.status = entireSemester;
+	}
+	
+	public int getActivityID() {
+		return activityID;
+	}
+
+	public void setActivityID(int activityID) {
+		this.activityID = activityID;
 	}
 	
 	public String getActivityName() {
@@ -97,26 +109,36 @@ public class Booking implements Serializable {
 	}
 	
 	public String toString() {
+		
 		if(status == singleDay) {
-			return "Activity: " + activityName + "     Room: " + room 
-				+ "    " + timeBooked + " Hours     " + dateBooked.getTime() + "     Single Day" +
+			SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM d, hh a");
+			return "Activity: " + activityName + "     Room: " + room.getRoomId()  
+				+ "    " + timeBooked + " Hours     " + sdf.format(dateBooked.getTime()) + "     Single Day" +
 				"     Approved: " + approved;
 		}
 		else if(status == eachWeek) {
-			SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM d, ''yy, hh:mm: a");
+			SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM d, hh a");
 			
-			return "Activity: " + activityName + "     Room: " + room 
+			return "Activity: " + activityName + "     Room: " + room.getRoomId()  
 					+ "     " + timeBooked + " Hours     " + "Start Date: " + sdf.format(dateBooked.getTime()) + "     Weekly" +  
 					"     Approved: " + approved;
 			}
 		else {
-			SimpleDateFormat sdf = new SimpleDateFormat("EEE, hh:mm aaa");
-			return "Activity: " + activityName + "     Room: " + room 
+			SimpleDateFormat sdf = new SimpleDateFormat("EEE, hh aaa");
+			return "Activity: " + activityName + "     Room: " + room.getRoomId() 
 				+ "    " + timeBooked + " Hours     " + sdf.format(dateBooked.getTime()) + "     Entire " + semester +    
 				"     Approved: " + approved;
 			
 		}
 	}
-
+	
+	public boolean equals(Booking otherBooking) {
+		if(this.dateBooked.equals(otherBooking.dateBooked) && 
+		   this.room.getRoomId().equals(otherBooking.room.getRoomId()) &&
+		   this.activityID == otherBooking.activityID) {
+			return true;
+		}
+		return false;
+	}
 }
 
