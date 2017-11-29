@@ -1,5 +1,8 @@
 package graphicsComponents;
 
+import java.awt.Component;
+
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -32,11 +35,10 @@ import schedule.Room;
 import schedule.Month;
 import users.User;
 
+
 public abstract class CommonFrame extends JFrame {
 
-	/**
-	 * Create the application.
-	 */
+	
 	public CommonFrame() {
 	}
 	
@@ -60,5 +62,7 @@ public abstract class CommonFrame extends JFrame {
 		login.setVisible(true);
 		this.dispose();
 	}
+	
+	public abstract Component returnComponent(int componentNum);
 }
 

@@ -133,7 +133,6 @@ public class SpaceSystem implements Serializable {
 			pendingRequests.put(b.getActivityID(), new LinkedList<Booking>());
 		}
 		getActivityPendingRequests(b.getActivityID()).add(b);
-		updateFile(pendingsFile, pendingRequests);
 	}
 	
 	public void removePendingRequest(int activityID) throws IOException {
@@ -213,11 +212,11 @@ public class SpaceSystem implements Serializable {
 		FileOutputStream fos;
 		ObjectOutputStream oos;
 		
-		User u1 = new User("Principal", "a", "1", "blah@gmail.com", 1, 0, this);
-		User u2 = new User("Brandon", "b", "1", "hello@gmail.com", 0, 0, this);
-		User u3 = new User("Sam", "c", "1", "aha@gmail.com", 0, 0, this);
-		User u4 = new User("Justin", "d", "1", "you@gmail.com", 0, 0, this);
-		User u5 = new User("Adrian", "e", "1", "by@gmail.com", 0, 0, this);
+		User u1 = new User("Principal", "a", "1", "blah@gmail.com", 1, 0);
+		User u2 = new User("Brandon", "b", "1", "hello@gmail.com", 0, 0);
+		User u3 = new User("Sam", "c", "1", "aha@gmail.com", 0, 0);
+		User u4 = new User("Justin", "d", "1", "you@gmail.com", 0, 0);
+		User u5 = new User("Adrian", "e", "1", "by@gmail.com", 0, 0);
 		
 		users.put(u1.getUserName(), u1);
 		users.put(u2.getUserName(), u2);

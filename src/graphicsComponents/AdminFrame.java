@@ -41,9 +41,9 @@ public class AdminFrame extends CommonFrame {
 	private JTable table;
 	private WideComboBox monthCB;
 	private WideComboBox semesterCB;
+	private WideComboBox roomCB;
 	private JSpinner timeFromSpinner;
 	private JSpinner timeToSpinner;
-	private WideComboBox roomCB;
 	private JTextField activityTextField;
 	private SpaceSystem system;
 	private JLabel userLabel;

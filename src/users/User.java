@@ -19,19 +19,18 @@ public class User implements Serializable {
 	private String emailAddress;
 	private int permissions;
 	private int requestCountWeek; 
-	private SpaceSystem system;
+	
 	
 	public static final int regularPermissions = 0;
 	public static final int adminPermissions = 1;
 	
-	public User(String name, String userName, String password, String emailAddress, int permissions, int requestCountWeek, SpaceSystem system) {
+	public User(String name, String userName, String password, String emailAddress, int permissions, int requestCountWeek) {
 		this.name = name;
 		this.userName = userName;
 		this.password = password;
 		this.emailAddress = emailAddress;
 		this.permissions = permissions;
 		this.requestCountWeek = requestCountWeek;
-		this.system = system;
 	}
 	
 	public String getPassword() {
@@ -49,7 +48,7 @@ public class User implements Serializable {
 	public void cancelBooking(Booking b) {
 		
 	}
-	
+	/*
 	public void addRoom (Room room) throws IOException{
 		if(permissions == adminPermissions) {
 			getSystem().addRoom(room);
@@ -61,7 +60,7 @@ public class User implements Serializable {
 			getSystem().addBooking(booking);
 		}
 	} 
-
+	*/
 	public String getName() {
 		return name;
 	}
@@ -102,6 +101,7 @@ public class User implements Serializable {
 		this.requestCountWeek = requestCountWeek;
 	}
 
+	/*
 	public SpaceSystem getSystem() {
 		return system;
 	}
@@ -109,7 +109,7 @@ public class User implements Serializable {
 	public void setSystem(SpaceSystem system) {
 		this.system = system;
 	}
-	
+	*/
 	public String toString() {
 		return userName;
 	}

@@ -36,10 +36,12 @@ public class RequestsPanel extends JPanel {
 	private SpaceSystem system;
 	private WideComboBox monthCB;
 	private WideComboBox semesterCB;
+	private WideComboBox roomCB;
+	private JTable table;
 	private JSpinner timeFromSpinner;
 	private JSpinner timeToSpinner;
 	private JTextField activityTextField;
-	private JList<Booking> bookingsList;
+	private WideComboBox bookingsList;
 
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private JRadioButton singleDayRB;
@@ -55,7 +57,6 @@ public class RequestsPanel extends JPanel {
 	private JButton myBookingsButton;
 	
 	private Date date = new Date();
-	private JComboBox comboBox;
 	
 	public RequestsPanel(SpaceSystem system, CommonFrame frame) {
 		this.system = system;
@@ -65,6 +66,10 @@ public class RequestsPanel extends JPanel {
 		else {
 			this.frame = (UserFrame) frame;
 		}
+		this.roomCB = (WideComboBox) frame.returnComponent(0);
+		this.semesterCB = (WideComboBox) frame.returnComponent(1);
+		this.monthCB = (WideComboBox) frame.returnComponent(2);
+		this.table = (JTable) frame.returnComponent(3);
 		initialize();
 	}
 	
@@ -149,8 +154,7 @@ public class RequestsPanel extends JPanel {
 		selectDayBookingsButton.setBounds(13, 261, 190, 23);
 		this.add(selectDayBookingsButton);
 		
-		DefaultListModel<Booking> model = new DefaultListModel<>();
-		bookingsList = new JList<>(model);
+		bookingsList = new WideComboBox();
 		bookingsList.setBounds(238, 69, 0, 0);
 		this.add(bookingsList);
 		
@@ -160,12 +164,12 @@ public class RequestsPanel extends JPanel {
 		
 		singleDayRB = new JRadioButton("Request for single day");
 		buttonGroup.add(singleDayRB);
-		singleDayRB.setBounds(180, 46, 183, 23);
+		singleDayRB.setBounds(13, 46, 183, 23);
 		this.add(singleDayRB);
 		
 		weekRB = new JRadioButton("Request for each week");
 		buttonGroup.add(weekRB);
-		weekRB.setBounds(13, 46, 165, 23);
+		weekRB.setBounds(203, 46, 165, 23);
 		this.add(weekRB);
 		
 		JButton btnRankUp = new JButton("Higher");
@@ -203,9 +207,9 @@ public class RequestsPanel extends JPanel {
 		btnConfirmRank.setBounds(373, 169, 129, 23);
 		this.add(btnConfirmRank);
 		
-		comboBox = new JComboBox();
-		comboBox.setBounds(119, 220, 425, 20);
-		add(comboBox);
+		bookingsList = new WideComboBox();
+		bookingsList.setBounds(119, 220, 425, 20);
+		add(bookingsList);
 	
 	}
 
@@ -228,6 +232,9 @@ public class RequestsPanel extends JPanel {
 					return;
 				}
 				
+				if(roomCB.getItemCount() == 0) { 
+					return; 
+				}
 				String roomName = ((Room) roomCB.getSelectedItem()).getRoomId();
 				Date spinnerDateFrom = (Date) timeFromSpinner.getValue();
 				Calendar calendarInstanceFrom = Calendar.getInstance();
@@ -277,7 +284,7 @@ public class RequestsPanel extends JPanel {
 				}
 				
 				Collection<Booking> pendings = system.getActivityPendingRequests(system.generateActivityID());
-				initializeList(bookingsList, pendings);
+				initializeBookings(pendings);
 				JOptionPane.showMessageDialog(this, "Booking request sent!");
 			} 
 			else {
@@ -293,12 +300,12 @@ public class RequestsPanel extends JPanel {
 	
 	public void rankUp() {
 		if(!system.isPendingsSent()) {
-			if(bookingsList.isSelectionEmpty()) {
-				JOptionPane.showMessageDialog(this, "You must select a request first in order to rank");
+			if(bookingsList.getItemCount() == 0) {
+				JOptionPane.showMessageDialog(this, "You must input a request first in order to rank");
 				return;
 			}
 			else {
-				Booking b = bookingsList.getSelectedValue();
+				Booking b = (Booking) bookingsList.getSelectedItem();
 				LinkedList<Booking> requests = system.getActivityPendingRequests(b.getActivityID());
 				if(requests.contains(b)) {
 					int index = requests.indexOf(b);
@@ -307,7 +314,7 @@ public class RequestsPanel extends JPanel {
 					}
 					requests.remove(index); 
 					requests.add(index - 1, b);
-					initializeList(bookingsList, requests);
+					initializeBookings(requests);
 				}
 			}
 		}
@@ -315,12 +322,12 @@ public class RequestsPanel extends JPanel {
 	
 	public void rankDown() {
 		if(!system.isPendingsSent()) {
-			if(bookingsList.isSelectionEmpty()) {
-				JOptionPane.showMessageDialog(this, "You must select a request first in order to rank");
+			if(bookingsList.getItemCount() == 0) {
+				JOptionPane.showMessageDialog(this, "You must input a request first in order to rank");
 				return;
 			}
 			else {
-				Booking b = bookingsList.getSelectedValue();
+				Booking b = (Booking) bookingsList.getSelectedItem();
 				LinkedList<Booking> requests = system.getActivityPendingRequests(b.getActivityID());
 				if(requests.contains(b)) {
 					int index = requests.indexOf(b);
@@ -329,36 +336,38 @@ public class RequestsPanel extends JPanel {
 					}
 					requests.remove(index);
 					requests.add(index + 1, b);
-					initializeList(bookingsList, requests);
+					initializeBookings(requests);
 				}
 			}
 		}
 	}
 	
 	public void confirmRank() throws IOException {
-		system.confirmRequestRank();
-		clearList(bookingsList);
-		JOptionPane.showMessageDialog(this, "Requests are now waiting to be approved");
+		if(!system.isPendingsSent()) {
+			system.confirmRequestRank();
+			bookingsList.removeAllItems();
+			JOptionPane.showMessageDialog(this, "Requests are now waiting to be approved");
+		}
 	}
 	
 	public void removeButtonPressed() throws IOException {
-		if(bookingsList.isSelectionEmpty()) {
+		if(bookingsList.getItemCount() == 0) {
 			JOptionPane.showMessageDialog(this, "You must select a booking first in the list above to remove");
 		}
 		else {
-			DefaultListModel listModel = (DefaultListModel) bookingsList.getModel();
-			system.removeBooking(bookingsList.getSelectedValue());
-			listModel.removeElement(bookingsList.getSelectedValue());
+			bookingsList.removeItem(bookingsList.getSelectedItem());
 		}
 	}
 	
-	public void clearList(JList list) {
-		DefaultListModel listModel = (DefaultListModel) list.getModel();
-		listModel.removeAllElements();
+	public void initializeBookings(Collection<Booking> bookings) {
+		bookingsList.removeAllItems();
+		for(Booking b: bookings) {
+			bookingsList.addItem(b);
+		}
 	}
 	
 	public void myBookings() {
-		clearList(bookingsList);
+		bookingsList.removeAllItems();
 		ArrayList<Booking> bookings = system.getBookings().get(UserValidator.userLoggedIn);
 		if(bookings != null) {
 			for(int i = 0; i < bookings.size(); i++) {
@@ -371,7 +380,7 @@ public class RequestsPanel extends JPanel {
 	} 
 	
 	public void bookingsOnSelectedDay() {
-		clearList(bookingsList);
+		bookingsList.removeAllItems();
 	
 		boolean selected = false;
 		for(int i = 0; i < table.getColumnCount(); i++) {
