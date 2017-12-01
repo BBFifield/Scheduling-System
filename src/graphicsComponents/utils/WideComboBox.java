@@ -1,4 +1,4 @@
-package graphicsComponents;
+package graphicsComponents.utils;
 
 import javax.swing.*; 
 import java.awt.*; 

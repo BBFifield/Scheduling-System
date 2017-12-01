@@ -1,4 +1,4 @@
-package graphicsComponents;
+package graphicsComponents.frames;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,7 +24,16 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SpinnerDateModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.table.DefaultTableModel;
 
+import graphicsComponents.panels.ApprovePanel;
+import graphicsComponents.panels.RequestsPanel;
+import graphicsComponents.panels.RoomsPanel;
+import graphicsComponents.utils.Highlighter;
+import graphicsComponents.utils.RequestsHighlighter;
+import graphicsComponents.utils.WideComboBox;
 import main.SpaceSystem;
 import main.UserValidator;
 import schedule.Booking;
@@ -75,10 +84,7 @@ public class AdminFrame extends CommonFrame {
 	
 	ArrayList<JCheckBox> dayCheckBoxes = new ArrayList<>();
 	
-	public static final int ROOM_CB = 0;
-	public static final int SEMESTER_CB = 1;
-	public static final int MONTH_CB = 2;
-	public static final int TABLE = 3;
+	
 
 	/**
 	 * Create the application.
@@ -119,9 +125,11 @@ public class AdminFrame extends CommonFrame {
 		});
 		getContentPane().add(semesterCB);
 		
-		int row = 7;	
-		int column = 7;
-		table = new JTable(row, column);
+		DefaultTableModel model = new DefaultTableModel();
+	    model.setColumnCount(7);
+	    model.setRowCount(7);
+		table = new JTable();
+		table.setModel(model);
 		table.setBounds(10, 134, 376, 112);
 		table.setCellSelectionEnabled(true);
 		initializeCalendar();
@@ -154,19 +162,35 @@ public class AdminFrame extends CommonFrame {
 		lblSelectRoom.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		lblSelectRoom.setBounds(10, 265, 104, 14);
 		getContentPane().add(lblSelectRoom);
-		
+	
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		
 		tabbedPane.setBounds(396, 24, 639, 328);
 		getContentPane().add(tabbedPane);
 		
 		roomsTab = new RoomsPanel(system, this);
-		tabbedPane.addTab("Add Rooms", roomsTab);
+		tabbedPane.addTab("Create Schedule", roomsTab);
 		
 		requestsTab = new RequestsPanel(system, this);
 		tabbedPane.addTab("Request Bookings", requestsTab);
 		
-		approveTab = new ApprovePanel(system);
+		approveTab = new ApprovePanel(system, this);
 		tabbedPane.addTab("Approve Bookings",approveTab);
+		
+		tabbedPane.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent event) {
+				JTabbedPane sourceTabbedPane = (JTabbedPane) event.getSource();
+				int index = sourceTabbedPane.getSelectedIndex();
+				/*
+				if(index == 1) {
+					highlight(new RequestsHighlighter(system, AdminFrame.this));
+					System.out.println("inside state changed - inside if");
+				}*/
+				if(index == 2) {
+					AdminFrame.this.approveTab.initializeRequestsList();
+				}
+			}
+		});
 	}
 	
 	public void initializeCalendar() {
@@ -253,4 +277,31 @@ public class AdminFrame extends CommonFrame {
 		this.userLabel.setText(userLabel);
 	}
 
+	public void highlight(Highlighter h) {
+		h.highlight();
+	}
+	
+	public int getTableRow(int day) {
+		for(int row = 0; row < 7; row++) {
+			for(int column = 0; column < 7; column++) {
+				int tablevalue = (int) table.getValueAt(row, column);
+				if( tablevalue == day) {
+					return row;
+				}
+			}
+		}
+		return -1;
+	}
+	
+	public int getTableColumn(int day) {
+		for(int row = 1; row < 7; row++) {
+			for(int column = 0; column < 7; column++) {
+				int tablevalue = (Integer) table.getValueAt(row, column);
+				if( tablevalue == day) {
+					return column;
+				}
+			}
+		}
+		return -1;
+	}
 }

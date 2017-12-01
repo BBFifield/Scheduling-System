@@ -1,4 +1,4 @@
-package graphicsComponents;
+package graphicsComponents.frames;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -26,6 +26,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SpinnerDateModel;
 
+import graphicsComponents.panels.RequestsPanel;
+import graphicsComponents.utils.WideComboBox;
 import main.SpaceSystem;
 import main.UserValidator;
 import schedule.Booking;

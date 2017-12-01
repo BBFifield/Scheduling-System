@@ -1,4 +1,4 @@
-package graphicsComponents;
+package graphicsComponents.panels;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,6 +22,10 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SpinnerDateModel;
 
+import graphicsComponents.frames.AdminFrame;
+import graphicsComponents.frames.CommonFrame;
+import graphicsComponents.frames.UserFrame;
+import graphicsComponents.utils.WideComboBox;
 import main.SpaceSystem;
 import main.UserValidator;
 import schedule.Booking;
@@ -371,7 +375,7 @@ public class RequestsPanel extends JPanel {
 		ArrayList<Booking> bookings = system.getBookings().get(UserValidator.userLoggedIn);
 		if(bookings != null) {
 			for(int i = 0; i < bookings.size(); i++) {
-				((DefaultListModel<Booking>) bookingsList.getModel()).addElement(bookings.get(i));
+				bookingsList.addItem(bookings.get(i));
 			}
 		}
 		else {
@@ -397,7 +401,7 @@ public class RequestsPanel extends JPanel {
 				for(ArrayList<Booking> a: bList) {
 					for(Booking b: a) {
 						if(day == b.getDate().get(Calendar.DAY_OF_MONTH)) {
-							((DefaultListModel<Booking>) bookingsList.getModel()).addElement(b);
+							bookingsList.addItem(b);
 						
 						}
 					}
