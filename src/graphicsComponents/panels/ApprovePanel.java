@@ -1,11 +1,14 @@
 package graphicsComponents.panels;
 
 import javax.swing.JPanel;
+import javax.swing.JTable;
 
 import graphicsComponents.frames.AdminFrame;
+import graphicsComponents.frames.CommonFrame;
 import graphicsComponents.utils.WideComboBox;
 import main.SpaceSystem;
 import schedule.Booking;
+import schedule.Month;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -14,6 +17,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -25,15 +29,18 @@ public class ApprovePanel extends JPanel {
 	private SpaceSystem system;
 	private AdminFrame frame;
 	
-	WideComboBox pendingsCB;
-	WideComboBox requestsCB;
+	private WideComboBox pendingsCB;
+	private WideComboBox monthCB;
+	private JTable table;
 	
 	public ApprovePanel(SpaceSystem system, AdminFrame frame) {
 		this.system = system;
 		this.frame = frame;
 		setLayout(null);
+		this.monthCB = (WideComboBox) frame.returnComponent(CommonFrame.MONTH_CB);
+		this.table = (JTable) frame.returnComponent(CommonFrame.TABLE);
 		initialize();
-		initializeRequestsList();
+		
 	}
 	
 	public void initialize() {
@@ -63,14 +70,6 @@ public class ApprovePanel extends JPanel {
 		approveButton.setBounds(10, 167, 136, 23);
 		add(approveButton);
 		
-		requestsCB = new WideComboBox();
-		requestsCB.setBounds(10, 69, 159, 20);
-		add(requestsCB);
-		
-		JLabel lblRequests = new JLabel("Requests");
-		lblRequests.setBounds(10, 51, 93, 14);
-		add(lblRequests);
-		
 		JButton btnViewPriorityList = new JButton("View Request Priorities");
 		btnViewPriorityList.addActionListener(new ActionListener() {
 
@@ -79,17 +78,8 @@ public class ApprovePanel extends JPanel {
 			}
 			
 		});
-		btnViewPriorityList.setBounds(179, 68, 196, 23);
+		btnViewPriorityList.setBounds(10, 67, 196, 23);
 		add(btnViewPriorityList);
-	}
-	
-	public void initializeRequestsList() {
-		requestsCB.removeAllItems();
-		Collection<LinkedList<Booking>> requestsList = system.getPendingRequests().values();
-		for(LinkedList<Booking> requests: requestsList) {
-			Booking topPriority = requests.peekFirst();
-			requestsCB.addItem(topPriority);
-		}
 	}
 	
 	public void initializePrioritiesList(Collection<Booking> pendings) {
@@ -109,22 +99,29 @@ public class ApprovePanel extends JPanel {
 		system.addBooking(request);
 		pendingsCB.removeAllItems();
 		system.removePendingRequest(request.getActivityID());
-		initializeRequestsList();
+		frame.highlightRequests();
 	}
-	
+		
 	public void viewPriorityListPressed() {
-		if(requestsCB.getItemCount() == 0) {
-			JOptionPane.showMessageDialog(this, "You must make a request selection to view its priorities");
-			return;
-		}
-		else {
-			Collection<LinkedList<Booking>> requestsList = system.getPendingRequests().values();
-			for(LinkedList<Booking> requests: requestsList) {
-				Booking topPriority = requests.peekFirst();
-				if(topPriority.equals(requestsCB.getSelectedItem())) {
-					initializePrioritiesList(requests);
-					break;
+		
+		if(table.getSelectedRow() != -1) {
+			
+			int dayHighlighted = (int) table.getValueAt(table.getSelectedRow(), table.getSelectedColumn());
+			System.out.println(dayHighlighted);
+			Collection<LinkedList<Booking>> pendingRequests = system.getPendingRequests().values();
+			boolean clickedRequests = false;
+			Month month = (Month) monthCB.getSelectedItem();
+			for(LinkedList<Booking> r: pendingRequests) {
+				Calendar requestday = r.getLast().getDate();
+				int dayRequest = requestday.get(Calendar.DAY_OF_MONTH);
+				System.out.println(dayRequest);
+				if(dayRequest == dayHighlighted) {
+					initializePrioritiesList(r);
+					clickedRequests = true;
 				}
+			}
+			if(clickedRequests == false) {
+				JOptionPane.showMessageDialog(this, "Must click on highlighted day to see priority list");
 			}
 		}
 	}
