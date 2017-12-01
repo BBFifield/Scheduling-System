@@ -80,6 +80,7 @@ public class AdminFrame extends CommonFrame {
 	private JButton selectDayBookingsButton;
 	private JButton myBookingsButton;
 	
+	private JTabbedPane tabbedPane;
 	private RoomsPanel roomsTab;
 	private RequestsPanel requestsTab;
 	private ApprovePanel approveTab;
@@ -119,6 +120,13 @@ public class AdminFrame extends CommonFrame {
 			public void actionPerformed(ActionEvent event) {
 				initializeCalendar();
 				changeSemester();
+			
+				if(AdminFrame.this.tabbedPane.getSelectedIndex() == 1) {
+					highlightBookings();
+				}
+				else if(AdminFrame.this.tabbedPane.getSelectedIndex() == 2) {
+					highlightRequests();
+				}
 			} 
 		});
 		getContentPane().add(monthCB);
@@ -129,6 +137,12 @@ public class AdminFrame extends CommonFrame {
 			public void actionPerformed(ActionEvent event) {
 				initializeSemesterCalendar();
 				initializeCalendar();
+				if(AdminFrame.this.tabbedPane.getSelectedIndex() == 1) {
+					highlightBookings();
+				}
+				else if(AdminFrame.this.tabbedPane.getSelectedIndex() == 2) {
+					highlightRequests();
+				}
 			} 
 		});
 		getContentPane().add(semesterCB);
@@ -175,7 +189,7 @@ public class AdminFrame extends CommonFrame {
 		lblSelectRoom.setBounds(10, 265, 104, 14);
 		getContentPane().add(lblSelectRoom);
 	
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		
 		tabbedPane.setBounds(396, 24, 639, 328);
 		getContentPane().add(tabbedPane);
@@ -196,7 +210,7 @@ public class AdminFrame extends CommonFrame {
 				
 				if(index == 1) {
 					highlightBookings();
-					System.out.println("inside state changed - inside if");
+					
 				}
 				if(index == 2) {
 					
@@ -210,6 +224,7 @@ public class AdminFrame extends CommonFrame {
 		
 		String[] dayOfWeek = {"Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"};
 		for(int i = 0; i < table.getColumnCount(); i++) {
+		
 			table.setValueAt(dayOfWeek[i], 0, i);
 			cellRenderer.newSetValue(0, i, dayOfWeek[i]);
 		}
@@ -304,14 +319,19 @@ public class AdminFrame extends CommonFrame {
 			for(int i = 1; i <= month.getDays(); i++) {
 				Calendar requestday = r.peek().getDate();
 				int day = requestday.get(Calendar.DAY_OF_MONTH);
-				if(day == i) {
+				
+				if(day == i && month.getMonthIndex() == requestday.get(Calendar.MONTH)) {
+					
+					initializeCalendar();
+				
+					
 					int row = getTableRow(day);
 					
 					int column = getTableColumn(day);
-					initializeCalendar();
-					System.out.println("yo");
+					
+				
 					cellRenderer.setHighlighted(row, column, true);
-					System.out.println("yo");
+					
 					table.repaint();
 				}
 			}
@@ -328,12 +348,15 @@ public class AdminFrame extends CommonFrame {
 				for(int i = 1; i <= month.getDays(); i++) {
 					Calendar bookingday = b.getDate();
 					int day = bookingday.get(Calendar.DAY_OF_MONTH);
-					if(day == i) {
+					
+					if(day == i && month.getMonthIndex() == bookingday.get(Calendar.MONTH)) {
+						initializeCalendar();
 						int row = getTableRow(day);
 					
 						int column = getTableColumn(day);
-						initializeCalendar();
+					
 						cellRenderer.setHighlighted(row, column, true);
+						table.repaint();
 					}
 				}
 			}
@@ -343,8 +366,9 @@ public class AdminFrame extends CommonFrame {
 	public void clearTableColors() {
 		for(int row = 1; row < 7; row++) {
 			for(int column = 0; column < 7; column++) {
+				
 				cellRenderer.setHighlighted(row, column, false);
-				System.out.println("hello");
+				AdminFrame.this.table.repaint();
 			}
 		}
 	}
@@ -352,10 +376,14 @@ public class AdminFrame extends CommonFrame {
 	public int getTableRow(int day) {
 		for(int row = 1; row < 7; row++) {
 			for(int column = 0; column < 7; column++) {
-				int tablevalue = (Integer) table.getValueAt(row, column);
-				if( tablevalue == day) {
-					return row;
+				if(table.getValueAt(row, column) != null) {
+					int tablevalue = (Integer) table.getValueAt(row, column);
+					
+					if( tablevalue == day) {
+						return row;
+					}
 				}
+				
 			}
 		}
 		return -1;
@@ -364,9 +392,11 @@ public class AdminFrame extends CommonFrame {
 	public int getTableColumn(int day) {
 		for(int row = 1; row < 7; row++) {
 			for(int column = 0; column < 7; column++) {
-				int tablevalue = (Integer) table.getValueAt(row, column);
-				if( tablevalue == day) {
-					return column;
+				if(table.getValueAt(row, column) != null) {
+					int tablevalue = (Integer) table.getValueAt(row, column);
+					if( tablevalue == day) {
+						return column;
+					}
 				}
 			}
 		}
@@ -381,13 +411,16 @@ public class AdminFrame extends CommonFrame {
 
 	    void setHighlighted(int r, int c, boolean highlighted)
 	    {
+	    	
 	        if (highlighted)
 	        {
 	            highlightedCells.add(new Point(r,c));
+	            
 	        }
 	        else
 	        {
 	            highlightedCells.remove(new Point(r,c));
+	            
 	        }
 	    }
 
@@ -411,17 +444,20 @@ public class AdminFrame extends CommonFrame {
 	    public Component getTableCellRendererComponent(JTable table, Object value,
 	        boolean isSelected, boolean hasFocus, int row, int column)
 	    {
-	    	 
+	    	
 	        if (isHighlighted(row,  column))
 	        {
+	        	
 	            setForeground(Color.BLACK);
 	            setBackground(Color.RED);
 	    
 	        }
 	        else
 	        {
+	        
 	            setForeground(Color.BLACK);
 	            setBackground(Color.WHITE);
+	  
 	        }
 	        
 	        if(hasValue(row, column)) {

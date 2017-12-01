@@ -23,6 +23,7 @@ import java.util.LinkedList;
 
 import javax.swing.JComboBox;
 import javax.swing.JButton;
+import javax.swing.JTextArea;
 
 public class ApprovePanel extends JPanel {
 	
@@ -80,7 +81,38 @@ public class ApprovePanel extends JPanel {
 		});
 		btnViewPriorityList.setBounds(10, 67, 196, 23);
 		add(btnViewPriorityList);
+		
+		JTextArea txtrInOrderTo = new JTextArea();
+		txtrInOrderTo.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		txtrInOrderTo.setLineWrap(true);
+		txtrInOrderTo.setWrapStyleWord(true);
+		txtrInOrderTo.setText("In order to view request priorities, click a red square in the calendar and then click the \"View Priorities Button\"");
+		txtrInOrderTo.setBounds(425, 17, 224, 52);
+		add(txtrInOrderTo);
+		
+		JButton btnDeny = new JButton("Deny Request");
+		
+		btnDeny.setBounds(216, 67, 162, 23);
+		add(btnDeny);
 	}
+	
+	/*public void denyPressed() {
+		Collection<LinkedList<Booking>> pendings =  system.getPendingRequests().values();
+		for(LinkedList<Booking> blist: pendings) {
+				Booking b = blist.peekFirst();
+				if(table.getSelectedRow() != -1 ) {
+					Booking b2 = (Booking) table.getValueAt(table.getSelectedRow(),table.getSelectedColumn());
+					for(int r = 1; r < 7; r++) {
+						for(int c = 0; c<7;c++) {
+							if(table.getValueAt(r,c) != null && b.equals(b2)) {
+								
+							}
+						}
+					}
+				}
+			}
+		}
+	}*/
 	
 	public void initializePrioritiesList(Collection<Booking> pendings) {
 		pendingsCB.removeAllItems();
@@ -107,15 +139,13 @@ public class ApprovePanel extends JPanel {
 		if(table.getSelectedRow() != -1) {
 			
 			int dayHighlighted = (int) table.getValueAt(table.getSelectedRow(), table.getSelectedColumn());
-			System.out.println(dayHighlighted);
 			Collection<LinkedList<Booking>> pendingRequests = system.getPendingRequests().values();
 			boolean clickedRequests = false;
 			Month month = (Month) monthCB.getSelectedItem();
 			for(LinkedList<Booking> r: pendingRequests) {
 				Calendar requestday = r.getLast().getDate();
 				int dayRequest = requestday.get(Calendar.DAY_OF_MONTH);
-				System.out.println(dayRequest);
-				if(dayRequest == dayHighlighted) {
+				if(dayRequest == dayHighlighted && month.getMonthIndex() == requestday.get(Calendar.MONTH)) {
 					initializePrioritiesList(r);
 					clickedRequests = true;
 				}

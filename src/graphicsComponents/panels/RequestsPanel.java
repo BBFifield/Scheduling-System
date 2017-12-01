@@ -279,7 +279,10 @@ public class RequestsPanel extends JPanel {
 				}
 				if(table.getSelectedRow() == 0) {
 					String semester = (String) semesterCB.getSelectedItem();
-					system.addPendingRequest(new Booking(system.getGeneratedActivityID(),activityName,system.searchUser(UserValidator.userLoggedIn), system.searchRoom(roomName), duration, calendarInstanceFrom, semester));
+					System.out.println("inside submit " + semester);
+					Booking booking = new Booking(system.getGeneratedActivityID(),activityName,system.searchUser(UserValidator.userLoggedIn), system.searchRoom(roomName), duration, calendarInstanceFrom, semester);
+					System.out.println(booking);
+					system.addPendingRequest(booking);
 				}
 				else {
 					int day = ((int) table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()));
@@ -288,6 +291,7 @@ public class RequestsPanel extends JPanel {
 				}
 				
 				Collection<Booking> pendings = system.getActivityPendingRequests(system.generateActivityID());
+				System.out.println(pendings);
 				initializeBookings(pendings);
 				JOptionPane.showMessageDialog(this, "Booking request sent!");
 			} 
