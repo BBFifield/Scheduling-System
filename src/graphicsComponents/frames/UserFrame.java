@@ -1,6 +1,9 @@
 package graphicsComponents.frames;
 
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -8,7 +11,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
@@ -25,8 +31,16 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SpinnerDateModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
+import graphicsComponents.frames.AdminFrame.ColoringCellRenderer;
+import graphicsComponents.panels.ApprovePanel;
 import graphicsComponents.panels.RequestsPanel;
+import graphicsComponents.panels.RoomsPanel;
+
 import graphicsComponents.utils.WideComboBox;
 import main.SpaceSystem;
 import main.UserValidator;
@@ -40,9 +54,9 @@ public class UserFrame extends CommonFrame {
 	private JTable table;
 	private WideComboBox monthCB;
 	private WideComboBox semesterCB;
+	private WideComboBox roomCB;
 	private JSpinner timeFromSpinner;
 	private JSpinner timeToSpinner;
-	private WideComboBox roomCB;
 	private JTextField activityTextField;
 	private SpaceSystem system;
 	private JLabel userLabel;
@@ -58,157 +72,75 @@ public class UserFrame extends CommonFrame {
 	private JLabel lblTimeFrom;
 	private JLabel lblTimeTo;
 	private JButton btnRequest;
+	private JTextField roomNameTextField;
 
 	private JButton btnRemoveBooking;
 	private JButton selectDayBookingsButton;
 	private JButton myBookingsButton;
 	
-	private Date date = new Date();
+	private RoomsPanel roomsTab;
+	private RequestsPanel requestsTab;
+	private ApprovePanel approveTab;
 	
-	public static final int ROOM_CB = 0;
-	public static final int SEMESTER_CB = 1;
-	public static final int MONTH_CB = 2;
-	public static final int TABLE = 3;
+	private Date date = new Date();
+	private JLabel lblCalendar;
+	private JLabel lblSelectRoom;
+	
+	private ColoringCellRenderer cellRenderer = new ColoringCellRenderer();
+	private TableColumnModel columnModel;
 
 	public UserFrame(SpaceSystem system) {
 		this.system = system;
 		initialize();
 		initializeRooms();
+		highlightBookings();
 	}
 	
 	private void initialize() {
-		this.setBounds(400, 50, 867, 618);
+		this.setBounds(200, 50, 1061, 405);
 		getContentPane().setLayout(null);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Space System");
 		
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(20, 13, 200, 29);
-		getContentPane().add(tabbedPane);
-		
-		RequestsPanel panel = new RequestsPanel(system);
-		tabbedPane.addTab("Request Bookings", null, panel, null);
-	
-		userLabel = new JLabel("Welcome " + null);
-		userLabel.setBounds(555, 13, 126, 23);
-		getContentPane().add(userLabel);
-		
-		JLabel lblNewLabel = new JLabel("Month");
-		lblNewLabel.setBounds(193, 54, 126, 14);
-		getContentPane().add(lblNewLabel);
-		
 		monthCB = new WideComboBox(Month.values());
-		monthCB.setBounds(193, 79, 126, 20);
+		monthCB.setBounds(139, 103, 126, 20);
 		monthCB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				initializeCalendar();
 				changeSemester();
+				highlightBookings();
 			} 
 		});
 		getContentPane().add(monthCB);
 		
 		semesterCB = new WideComboBox(new String[]{"Winter", "Summer", "Fall"});
-		semesterCB.setBounds(20, 79, 119, 20);
+		semesterCB.setBounds(10, 103, 119, 20);
 		semesterCB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				initializeSemesterCalendar();
 				initializeCalendar();
+				highlightBookings();
 			} 
 		});
 		getContentPane().add(semesterCB);
 		
-		int row = 7;	
-		int column = 7;
-		table = new JTable(row, column);
-		table.setBounds(20, 110, 376, 112);
+		table = new JTable(7,7);
+		table.setBounds(10, 134, 376, 112);
 		table.setCellSelectionEnabled(true);
 		initializeCalendar();
+		columnModel = table.getColumnModel();
+        int cc = columnModel.getColumnCount();
+        for (int c=0; c < cc; c++)
+        {
+            TableColumn column = columnModel.getColumn(c);
+            column.setCellRenderer(cellRenderer);
+        }
 		getContentPane().add(table);
-		
-		timeFromSpinner = new JSpinner(new SpinnerDateModel(date, null, null, Calendar.HOUR_OF_DAY));
-		timeFromSpinner.setBounds(658, 79, 46, 20);
-		JSpinner.DateEditor de = new JSpinner.DateEditor(timeFromSpinner, "HH");
-		timeFromSpinner.setEditor(de);
-		getContentPane().add(timeFromSpinner);
-		
-		timeToSpinner = new JSpinner(new SpinnerDateModel(date, null, null, Calendar.HOUR_OF_DAY));
-		timeToSpinner.setBounds(733, 79, 46, 20);
-		JSpinner.DateEditor ne1 = new JSpinner.DateEditor(timeToSpinner, "HH");
-		timeToSpinner.setEditor(ne1);
-		getContentPane().add(timeToSpinner);
-		
-		lblRequestBooking = new JLabel("Request Booking");
-		lblRequestBooking.setBounds(509, 133, 119, 14);
-		getContentPane().add(lblRequestBooking);
-		
-		lblTimeTo = new JLabel("Time To");
-		lblTimeTo.setBounds(733, 54, 46, 14);
-		getContentPane().add(lblTimeTo);
-		
-		lblTimeFrom = new JLabel("Time From");
-		lblTimeFrom.setBounds(658, 54, 76, 14); 
-		getContentPane().add(lblTimeFrom);
-		
-		activityTextField = new JTextField();
-		activityTextField.setBounds(555, 164, 136, 19);
-		getContentPane().add(activityTextField);
-		activityTextField.setColumns(10);
-		
-		lblActivityName = new JLabel("Activity Name");
-		lblActivityName.setBounds(448, 167, 97, 14);
-		getContentPane().add(lblActivityName);
-		
-		lblRoom = new JLabel("Select Room ");
-		lblRoom.setBounds(483, 54, 106, 14);
-		getContentPane().add(lblRoom);
-		
-		roomCB = new WideComboBox();
-		roomCB.setBounds(442, 79, 187, 20);
-		getContentPane().add(roomCB);
-		
-		btnRequest = new JButton("Submit Request");
-		btnRequest.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				try {
-					submitButtonPressed();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		btnRequest.setBounds(555, 194, 136, 23);
-		getContentPane().add(btnRequest);
-		
-		btnRemoveBooking = new JButton("Remove Booking");
-		btnRemoveBooking.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				try {
-					removeButtonPressed();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		btnRemoveBooking.setBounds(399, 515, 167, 23);
-		getContentPane().add(btnRemoveBooking);
-		
-		myBookingsButton = new JButton("My Bookings");
-		myBookingsButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				myBookings();
-			}
-		});
-		myBookingsButton.setBounds(214, 515, 167, 23);
-		getContentPane().add(myBookingsButton);
-		
-		selectDayBookingsButton = new JButton("Bookings on Selected Day");
-		selectDayBookingsButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				bookingsOnSelectedDay();
-			}
-		});
-		selectDayBookingsButton.setBounds(20, 515, 167, 23);
-		getContentPane().add(selectDayBookingsButton);
+	
+		userLabel = new JLabel("Welcome " + null);
+		userLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		userLabel.setBounds(21, 24, 172, 23);
+		getContentPane().add(userLabel);
 		
 		btnLogout = new JButton("Logout");
 		btnLogout.addActionListener(new ActionListener() {
@@ -216,71 +148,107 @@ public class UserFrame extends CommonFrame {
 				logout();
 			}
 		});
-		btnLogout.setBounds(733, 13, 89, 23);
+		btnLogout.setBounds(224, 24, 119, 23);
 		getContentPane().add(btnLogout);
 		
-		DefaultListModel<Booking> model = new DefaultListModel<>();
-		bookingsList = new JList<>(model);
-		bookingsList.setBounds(155, 322, 650, 182);
-		getContentPane().add(bookingsList);
+		lblCalendar = new JLabel("Calendar");
+		lblCalendar.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		lblCalendar.setBounds(10, 78, 119, 14);
+		getContentPane().add(lblCalendar);
 		
-		JLabel lblBookings = new JLabel("Bookings List");
-		lblBookings.setBounds(356, 297, 112, 14);
-		getContentPane().add(lblBookings);
+		roomCB = new WideComboBox();
+		roomCB.setBounds(10, 300, 376, 20);
+		getContentPane().add(roomCB);
 		
-		singleDayRB = new JRadioButton("Request for single day");
-		buttonGroup.add(singleDayRB);
-		singleDayRB.setBounds(20, 230, 158, 23);
-		getContentPane().add(singleDayRB);
+		lblSelectRoom = new JLabel("Select Room");
+		lblSelectRoom.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		lblSelectRoom.setBounds(10, 265, 104, 14);
+		getContentPane().add(lblSelectRoom);
 		
-		weekRB = new JRadioButton("Request for each week");
-		buttonGroup.add(weekRB);
-		weekRB.setBounds(196, 230, 180, 23);
-		getContentPane().add(weekRB);
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		
-		JButton btnRankUp = new JButton("Higher");
-		btnRankUp.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				rankUp();
-			}
-		});
-		btnRankUp.setBounds(34, 332, 89, 23);
-		getContentPane().add(btnRankUp);
+		tabbedPane.setBounds(396, 24, 639, 328);
+		getContentPane().add(tabbedPane);
 		
-		JButton btnRankDown = new JButton("Lower");
-		btnRankDown.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				rankDown();
-			}
-		});
-		btnRankDown.setBounds(34, 366, 89, 23);
-		getContentPane().add(btnRankDown);
-		
-		JLabel lblRankPendingRequests = new JLabel("Rank Pending Requests");
-		lblRankPendingRequests.setBounds(10, 306, 136, 14);
-		getContentPane().add(lblRankPendingRequests);
-		
-		JButton btnConfirmRank = new JButton("Confirm Rank");
-		btnConfirmRank.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					confirmRank();
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-			}
-		});
-		btnConfirmRank.setBounds(20, 400, 112, 23);
-		getContentPane().add(btnConfirmRank);
-		
-		JLabel lblSemester = new JLabel("Semester");
-		lblSemester.setBounds(20, 54, 97, 14);
-		getContentPane().add(lblSemester);
+		requestsTab = new RequestsPanel(system, this);
+		tabbedPane.addTab("Request Bookings", requestsTab);
 	}
 	
-	public void setUserLabel(String userLabel) {
-		this.userLabel.setText(userLabel);
+public void initializeCalendar() {
+		
+		String[] dayOfWeek = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+		for(int i = 0; i < table.getColumnCount(); i++) {
+			table.setValueAt(dayOfWeek[i], 0, i);
+			cellRenderer.newSetValue(0, i, dayOfWeek[i]);
+		}
+		Month selected = (Month) monthCB.getSelectedItem();
+		int dayCount = 0;
+		for(int i = 1; i < 7; i++) {
+			for(int j = 0; j < 7 && dayCount < selected.getDays(); j++) {
+				
+				if(j < selected.getIndexStartDay() && i == 1) {
+				    
+					table.setValueAt(null, 1, j);
+					cellRenderer.newSetValue(1, j, null);
+				}
+				else if(i == 1) {
+					dayCount++;
+					table.setValueAt(dayCount ,1, j);
+					cellRenderer.newSetValue(1, j,dayCount);
+				}
+				else {
+					dayCount++;
+					table.setValueAt(dayCount ,i, j);
+					cellRenderer.newSetValue(i, j,dayCount);
+				}
+			}
+		}
 	}
+	
+	public void changeSemester() {
+		
+		Month selected = (Month) monthCB.getSelectedItem();
+		
+		if(selected.getSemester() == 1) {
+			semesterCB.setSelectedIndex(0);
+		}
+		else if(selected.getSemester() == 2) {
+			semesterCB.setSelectedIndex(1);
+		}
+		else {
+			semesterCB.setSelectedIndex(2);
+		}
+		
+		initializeRooms();
+	}
+	
+	public void initializeSemesterCalendar() {
+		int semester = semesterCB.getSelectedIndex();
+		Month month = (Month) monthCB.getSelectedItem();
+		
+		if(semester == 0 && month.getSemester() != 1) {
+			monthCB.setSelectedIndex(0);
+		}
+		else if(semester == 1 && month.getSemester() != 2) {
+			monthCB.setSelectedIndex(4);
+		}
+		else if(semester == 2 && month.getSemester() != 3) {
+			monthCB.setSelectedIndex(8);
+		}
+		
+		initializeRooms();
+	}
+	
+	public void initializeRooms() {
+		roomCB.removeAllItems();
+		Collection<Room> rooms = system.getRooms().values();
+		for(Room r: rooms) {
+			if(r.getSemester() == semesterCB.getSelectedIndex()) {
+				roomCB.addItem(r);
+			}
+		}
+	}
+	
 	
 	public Component returnComponent(int componentNum) {
 		if(componentNum == ROOM_CB) return roomCB;
@@ -289,4 +257,160 @@ public class UserFrame extends CommonFrame {
 		else if(componentNum == TABLE) return table;
 		return null;
 	}
+
+	public void setUserLabel(String userLabel) {
+		this.userLabel.setText(userLabel);
+	}
+
+	
+
+	public void highlightRequests() {
+		clearTableColors();
+		Collection<LinkedList<Booking>> pendingRequests = system.getPendingRequests().values();
+		
+		Month month = (Month) monthCB.getSelectedItem();
+		for(LinkedList<Booking> r: pendingRequests) {
+			for(int i = 1; i <= month.getDays(); i++) {
+				Calendar requestday = r.peek().getDate();
+				int day = requestday.get(Calendar.DAY_OF_MONTH);
+				if(day == i && month.getMonthIndex() == requestday.get(Calendar.MONTH)) {
+					int row = getTableRow(day);
+					
+					int column = getTableColumn(day);
+					initializeCalendar();
+					cellRenderer.setHighlighted(row, column, true);
+					table.repaint();
+				}
+			}
+		}
+	}
+	
+	public void highlightBookings() {
+		clearTableColors();
+		Collection<ArrayList<Booking>> bookings = system.getBookings().values();
+		
+		Month month = (Month) monthCB.getSelectedItem();
+		for(ArrayList<Booking> bookingList: bookings) {
+			for(Booking b: bookingList) {
+				for(int i = 1; i <= month.getDays(); i++) {
+					Calendar bookingday = b.getDate();
+					int day = bookingday.get(Calendar.DAY_OF_MONTH);
+					if(day == i && month.getMonthIndex() == bookingday.get(Calendar.MONTH)) {
+						int row = getTableRow(day);
+					
+						int column = getTableColumn(day);
+						initializeCalendar();
+						cellRenderer.setHighlighted(row, column, true);
+						table.repaint();
+					}
+				}
+			}
+		}
+	}
+	
+	public void clearTableColors() {
+		for(int row = 1; row < 7; row++) {
+			for(int column = 0; column < 7; column++) {
+				cellRenderer.setHighlighted(row, column, false);
+				UserFrame.this.table.repaint();
+			}
+		}
+	}
+	
+	public int getTableRow(int day) {
+		for(int row = 1; row < 7; row++) {
+			for(int column = 0; column < 7; column++) {
+				if(table.getValueAt(row, column) != null) {
+					int tablevalue = (Integer) table.getValueAt(row, column);
+					
+					if( tablevalue == day) {
+						return row;
+					}
+				}
+				
+			}
+		}
+		return -1;
+	}
+	
+	public int getTableColumn(int day) {
+		for(int row = 1; row < 7; row++) {
+			for(int column = 0; column < 7; column++) {
+				if(table.getValueAt(row, column) != null) {
+					int tablevalue = (Integer) table.getValueAt(row, column);
+					if( tablevalue == day) {
+						return column;
+					}
+				}
+			}
+		}
+		return -1;
+	}
+	
+	class ColoringCellRenderer extends DefaultTableCellRenderer
+	{
+		
+	    private final Set<Point> highlightedCells = new HashSet<Point>();
+	    private final HashMap<Point,Object> filledCells = new HashMap<>();
+
+	    void setHighlighted(int r, int c, boolean highlighted)
+	    {
+	        if (highlighted)
+	        {
+	            highlightedCells.add(new Point(r,c));
+	        }
+	        else
+	        {
+	            highlightedCells.remove(new Point(r,c));
+	        }
+	    }
+
+	    private boolean isHighlighted(int r, int c)
+	    {
+	        return highlightedCells.contains(new Point(r,c));
+	       
+	    }
+	    
+	    void newSetValue(int r, int c, Object value) 
+	    {
+	    		filledCells.put(new Point(r,c), value);
+	    }
+	    
+	    private boolean hasValue(int r, int c) 
+	    {
+	    	return filledCells.containsKey(new Point(r,c));
+	    }
+
+	    
+	    public Component getTableCellRendererComponent(JTable table, Object value,
+	        boolean isSelected, boolean hasFocus, int row, int column)
+	    {
+	    	 
+	        if (isHighlighted(row,  column))
+	        {
+	            setForeground(Color.BLACK);
+	            setBackground(Color.RED);
+	    
+	        }
+	        else
+	        {
+	            setForeground(Color.BLACK);
+	            setBackground(Color.WHITE);
+	        }
+	        
+	        if(hasValue(row, column)) {
+	        	
+	        	setValue(filledCells.get(new Point(row,column)));
+	        }
+	        else {
+	        	setValue(null);
+	        }
+	        
+	        return this;
+	    }
+	    
+	    
+	}
 }
+
+

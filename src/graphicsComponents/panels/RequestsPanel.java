@@ -279,7 +279,10 @@ public class RequestsPanel extends JPanel {
 				}
 				if(table.getSelectedRow() == 0) {
 					String semester = (String) semesterCB.getSelectedItem();
-					system.addPendingRequest(new Booking(system.getGeneratedActivityID(),activityName,system.searchUser(UserValidator.userLoggedIn), system.searchRoom(roomName), duration, calendarInstanceFrom, semester));
+					System.out.println("inside submit " + semester);
+					Booking booking = new Booking(system.getGeneratedActivityID(),activityName,system.searchUser(UserValidator.userLoggedIn), system.searchRoom(roomName), duration, calendarInstanceFrom, semester);
+					System.out.println(booking);
+					system.addPendingRequest(booking);
 				}
 				else {
 					int day = ((int) table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()));
@@ -288,6 +291,7 @@ public class RequestsPanel extends JPanel {
 				}
 				
 				Collection<Booking> pendings = system.getActivityPendingRequests(system.generateActivityID());
+				System.out.println(pendings);
 				initializeBookings(pendings);
 				JOptionPane.showMessageDialog(this, "Booking request sent!");
 			} 
@@ -311,14 +315,16 @@ public class RequestsPanel extends JPanel {
 			else {
 				Booking b = (Booking) bookingsList.getSelectedItem();
 				LinkedList<Booking> requests = system.getActivityPendingRequests(b.getActivityID());
-				if(requests.contains(b)) {
-					int index = requests.indexOf(b);
-					if(index == 0) {
-						return;
+				if(!requests.isEmpty()) {
+					if(requests.contains(b)) {
+						int index = requests.indexOf(b);
+						if(index == 0) {
+							return;
+						}
+						requests.remove(index); 
+						requests.add(index - 1, b);
+						initializeBookings(requests);
 					}
-					requests.remove(index); 
-					requests.add(index - 1, b);
-					initializeBookings(requests);
 				}
 			}
 		}
@@ -333,14 +339,16 @@ public class RequestsPanel extends JPanel {
 			else {
 				Booking b = (Booking) bookingsList.getSelectedItem();
 				LinkedList<Booking> requests = system.getActivityPendingRequests(b.getActivityID());
-				if(requests.contains(b)) {
-					int index = requests.indexOf(b);
-					if(index == requests.size() - 1) {
-						return;
+				if(!requests.isEmpty()) {
+					if(requests.contains(b)) {
+						int index = requests.indexOf(b);
+						if(index == requests.size() - 1) {
+							return;
+						}
+						requests.remove(index);
+						requests.add(index + 1, b);
+						initializeBookings(requests);
 					}
-					requests.remove(index);
-					requests.add(index + 1, b);
-					initializeBookings(requests);
 				}
 			}
 		}
@@ -359,7 +367,9 @@ public class RequestsPanel extends JPanel {
 			JOptionPane.showMessageDialog(this, "You must select a booking first in the list above to remove");
 		}
 		else {
+			Booking toBeRemoved = (Booking) bookingsList.getSelectedItem();
 			bookingsList.removeItem(bookingsList.getSelectedItem());
+			system.removeBooking(toBeRemoved);
 		}
 	}
 	
