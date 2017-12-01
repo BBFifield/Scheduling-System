@@ -311,14 +311,16 @@ public class RequestsPanel extends JPanel {
 			else {
 				Booking b = (Booking) bookingsList.getSelectedItem();
 				LinkedList<Booking> requests = system.getActivityPendingRequests(b.getActivityID());
-				if(requests.contains(b)) {
-					int index = requests.indexOf(b);
-					if(index == 0) {
-						return;
+				if(!requests.isEmpty()) {
+					if(requests.contains(b)) {
+						int index = requests.indexOf(b);
+						if(index == 0) {
+							return;
+						}
+						requests.remove(index); 
+						requests.add(index - 1, b);
+						initializeBookings(requests);
 					}
-					requests.remove(index); 
-					requests.add(index - 1, b);
-					initializeBookings(requests);
 				}
 			}
 		}
@@ -333,14 +335,16 @@ public class RequestsPanel extends JPanel {
 			else {
 				Booking b = (Booking) bookingsList.getSelectedItem();
 				LinkedList<Booking> requests = system.getActivityPendingRequests(b.getActivityID());
-				if(requests.contains(b)) {
-					int index = requests.indexOf(b);
-					if(index == requests.size() - 1) {
-						return;
+				if(!requests.isEmpty()) {
+					if(requests.contains(b)) {
+						int index = requests.indexOf(b);
+						if(index == requests.size() - 1) {
+							return;
+						}
+						requests.remove(index);
+						requests.add(index + 1, b);
+						initializeBookings(requests);
 					}
-					requests.remove(index);
-					requests.add(index + 1, b);
-					initializeBookings(requests);
 				}
 			}
 		}
@@ -359,7 +363,9 @@ public class RequestsPanel extends JPanel {
 			JOptionPane.showMessageDialog(this, "You must select a booking first in the list above to remove");
 		}
 		else {
+			Booking toBeRemoved = (Booking) bookingsList.getSelectedItem();
 			bookingsList.removeItem(bookingsList.getSelectedItem());
+			system.removeBooking(toBeRemoved);
 		}
 	}
 	
