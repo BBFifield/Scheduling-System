@@ -1,4 +1,4 @@
-package graphicsComponents;
+package graphicsComponents.frames;
 
 import java.awt.Component;
 
@@ -28,6 +28,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SpinnerDateModel;
 
+import graphicsComponents.LoginPage;
 import main.SpaceSystem;
 import main.UserValidator;
 import schedule.Booking;
@@ -38,6 +39,10 @@ import users.User;
 
 public abstract class CommonFrame extends JFrame {
 
+	public static final int ROOM_CB = 0;
+	public static final int SEMESTER_CB = 1;
+	public static final int MONTH_CB = 2;
+	public static final int TABLE = 3;
 	
 	public CommonFrame() {
 	}
@@ -64,5 +69,7 @@ public abstract class CommonFrame extends JFrame {
 	}
 	
 	public abstract Component returnComponent(int componentNum);
+	public abstract int getTableRow(int day);
+	public abstract int getTableColumn(int day);
 }
 

@@ -30,6 +30,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import graphicsComponents.MainFrame.Month;
+import graphicsComponents.utils.WideComboBox;
 
 import java.util.Date;
 import java.util.Enumeration;

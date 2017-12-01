@@ -1,4 +1,4 @@
-package graphicsComponents;
+package graphicsComponents.panels;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -23,6 +23,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SpinnerDateModel;
 
+import graphicsComponents.frames.AdminFrame;
+import graphicsComponents.utils.WideComboBox;
 import main.SpaceSystem;
 import schedule.Booking;
 import schedule.Month;

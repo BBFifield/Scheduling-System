@@ -2,6 +2,11 @@ package graphicsComponents;
 
 import javax.swing.JFrame;
 import javax.swing.JTextField;
+
+import graphicsComponents.frames.AdminFrame;
+import graphicsComponents.frames.CommonFrame;
+import graphicsComponents.frames.UserFrame;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JButton;
